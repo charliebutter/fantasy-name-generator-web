@@ -1,0 +1,608 @@
+{% extends 'base.html' %}
+
+{# Set the specific title for this page #}
+{% block title %}Fantasy Name Generator{% endblock %}
+
+{# No extra head elements needed for index page #}
+{% block extra_head %}{% endblock %}
+
+{# Define the main content for the index page #}
+{% block content %}
+<div class="generator-container">
+    <h2>Generate Fantasy Names</h2>
+
+    <!-- The form whose data will be sent to the backend -->
+    <form id="generator-form" onsubmit="return false;"> <!-- Prevent default submission -->
+
+        <!-- Generator Control Panel -->
+        <div class="generator-controls">
+            <div class="control-group">
+                <div class="preset-selector">
+                    <label for="preset">Load Preset:</label>
+                    <select id="preset" name="preset"> <!-- name="preset" -->
+                        <option value="default">Default</option>
+                        <option value="high_elf">High Elf</option>
+                        <option value="dark_elf">Dark Elf</option>
+                        <option value="dwarf">Dwarf</option>
+                        <option value="orc">Orc/Brute</option>
+                        <option value="fae">Fae/Fairy</option>
+                        <option value="druid">Druid</option>
+                        <option value="desert">Desert Nomad</option>
+                    </select>
+                </div>
+
+                <div class="count-selector">
+                    <label for="count">Name Count:</label>
+                    <!-- Added class="number-input" -->
+                    <input type="number" id="count" name="count" min="1" max="20" value="8" class="number-input"> <!-- name="count" -->
+                </div>
+            </div>
+
+            <button type="button" id="generate-btn">Generate Names</button>
+        </div>
+
+        <!-- Results Area -->
+        <div id="result-container" class="hidden">
+            <div id="generated-names" class="names-display">
+                <!-- Names will be inserted here by JavaScript -->
+            </div>
+            <div class="results-controls">
+                <!-- Added class="copy-all-button" -->
+                <button type="button" class="button-secondary copy-all-button">Copy All</button>
+                <div class="preset-actions">
+                    <button type="button" id="share-preset-btn" class="button-secondary">Share Settings</button>
+                    <button type="button" id="load-preset-btn" class="button-secondary">Load Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button type="button" id="tab-basic" class="tab-button active">Basic Settings</button>
+            <button type="button" id="tab-structure" class="tab-button">Structure & Features</button>
+            <button type="button" id="tab-advanced" class="tab-button">Advanced</button>
+        </div>
+
+        <!-- === Basic Options Tab === -->
+        <div id="basic-options" class="tab-content active">
+            <h3>Basic Generator Settings</h3>
+            <p class="section-info">Control the style and personality of names. Adjust the slider ranges to define the desired vibe.</p>
+
+            <div class="form-group">
+                <div class="vibe-sliders-grid">
+                    <!-- Vibe Sliders: Ensure min/max inputs have correct 'name' -->
+                    <!-- Good/Evil -->
+                    <div class="vibe-slider-container">
+                        <div class="vibe-slider-header">
+                            <div class="integrated-slider-label">Alignment</div>
+                            <!-- Added class="vibe-range-display" -->
+                            <div class="vibe-slider-range vibe-range-display" id="good_evil_range">1 - 10</div>
+                        </div>
+                        <div class="vibe-slider-row">
+                            <div class="vibe-slider-label-start">Good</div>
+                            <div class="vibe-slider-track">
+                                <div class="dual-slider-container">
+                                    <!-- Added class="vibe-min-slider" -->
+                                    <input type="range" id="good_evil_min" name="good_evil_min" min="1" max="10" value="1" class="min-slider vibe-min-slider"> <!-- name added -->
+                                    <!-- Added class="vibe-max-slider" -->
+                                    <input type="range" id="good_evil_max" name="good_evil_max" min="1" max="10" value="10" class="max-slider vibe-max-slider"> <!-- name added -->
+                                </div>
+                            </div>
+                            <div class="vibe-slider-label-end">Evil</div>
+                        </div>
+                    </div>
+                    <!-- Elegant/Rough -->
+                    <div class="vibe-slider-container">
+                        <div class="vibe-slider-header">
+                            <div class="integrated-slider-label">Tone</div>
+                            <div class="vibe-slider-range vibe-range-display" id="elegant_rough_range">1 - 10</div>
+                        </div>
+                        <div class="vibe-slider-row">
+                            <div class="vibe-slider-label-start">Elegant</div>
+                            <div class="vibe-slider-track">
+                                <div class="dual-slider-container">
+                                    <input type="range" id="elegant_rough_min" name="elegant_rough_min" min="1" max="10" value="1" class="min-slider vibe-min-slider"> <!-- name added -->
+                                    <input type="range" id="elegant_rough_max" name="elegant_rough_max" min="1" max="10" value="10" class="max-slider vibe-max-slider"> <!-- name added -->
+                                </div>
+                            </div>
+                            <div class="vibe-slider-label-end">Rough</div>
+                        </div>
+                    </div>
+                    <!-- Common/Exotic -->
+                    <div class="vibe-slider-container">
+                        <div class="vibe-slider-header">
+                            <div class="integrated-slider-label">Quirkiness</div>
+                            <div class="vibe-slider-range vibe-range-display" id="common_exotic_range">1 - 10</div>
+                        </div>
+                        <div class="vibe-slider-row">
+                            <div class="vibe-slider-label-start">Common</div>
+                            <div class="vibe-slider-track">
+                                <div class="dual-slider-container">
+                                    <input type="range" id="common_exotic_min" name="common_exotic_min" min="1" max="10" value="1" class="min-slider vibe-min-slider"> <!-- name added -->
+                                    <input type="range" id="common_exotic_max" name="common_exotic_max" min="1" max="10" value="10" class="max-slider vibe-max-slider"> <!-- name added -->
+                                </div>
+                            </div>
+                            <div class="vibe-slider-label-end">Exotic</div>
+                        </div>
+                    </div>
+                    <!-- Weak/Powerful -->
+                    <div class="vibe-slider-container">
+                        <div class="vibe-slider-header">
+                            <div class="integrated-slider-label">Strength</div>
+                            <div class="vibe-slider-range vibe-range-display" id="weak_powerful_range">1 - 10</div>
+                        </div>
+                        <div class="vibe-slider-row">
+                            <div class="vibe-slider-label-start">Weak</div>
+                            <div class="vibe-slider-track">
+                                <div class="dual-slider-container">
+                                    <input type="range" id="weak_powerful_min" name="weak_powerful_min" min="1" max="10" value="1" class="min-slider vibe-min-slider"> <!-- name added -->
+                                    <input type="range" id="weak_powerful_max" name="weak_powerful_max" min="1" max="10" value="10" class="max-slider vibe-max-slider"> <!-- name added -->
+                                </div>
+                            </div>
+                            <div class="vibe-slider-label-end">Powerful</div>
+                        </div>
+                    </div>
+                    <!-- Feminine/Masculine -->
+                    <div class="vibe-slider-container">
+                        <div class="vibe-slider-header">
+                            <div class="integrated-slider-label">Gender</div>
+                            <div class="vibe-slider-range vibe-range-display" id="fem_masc_range">1 - 10</div>
+                        </div>
+                        <div class="vibe-slider-row">
+                            <div class="vibe-slider-label-start">Feminine</div>
+                            <div class="vibe-slider-track">
+                                <div class="dual-slider-container">
+                                    <input type="range" id="fem_masc_min" name="fem_masc_min" min="1" max="10" value="1" class="min-slider vibe-min-slider"> <!-- name added -->
+                                    <input type="range" id="fem_masc_max" name="fem_masc_max" min="1" max="10" value="10" class="max-slider vibe-max-slider"> <!-- name added -->
+                                </div>
+                            </div>
+                            <div class="vibe-slider-label-end">Masculine</div>
+                        </div>
+                    </div>
+                    <!-- Theme -->
+                    <div class="vibe-slider-container">
+                        <div class="vibe-slider-header">
+                            <div class="integrated-slider-label">Theme</div>
+                        </div>
+                        <div class="vibe-slider-track theme-select-wrap">
+                            <select id="theme" name="theme"> <!-- name="theme" -->
+                                <option value="default">Default</option>
+                                <option value="elf">Elf</option>
+                                <option value="dwarf">Dwarf</option>
+                                <option value="orc">Orc</option>
+                                <option value="fae">Fae</option>
+                                <option value="druid">Druid</option>
+                                <option value="desert">Desert</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- End Basic Options -->
+
+        <!-- === Structure & Features Tab === -->
+        <div id="structure-options" class="tab-content">
+            <h3>Name Structure & Special Features</h3>
+            <p class="section-info">Fine-tune the physical composition of names including length, special characters, and decorative elements.</p>
+
+            <div class="advanced-sections-grid">
+                <!-- Column 1: Name Length & Structure -->
+                <div class="advanced-section">
+                    <h4>Name Length & Structure</h4>
+                    <p class="section-info">Set block count and vowel/consonant start chance.</p>
+
+                    <div class="control-stack">
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Probability (0.0 to 1.0) of names starting with a vowel">Vowel Start Probability</div>
+                                <div class="slider-input-row">
+                                    <div class="integrated-slider-input">
+                                        <input type="range" id="vowel_first_prefix" name="vowel_first_prefix" min="0" max="1" step="0.1" value="0.2" class="value-slider">
+                                    </div>
+                                    <div class="integrated-slider-value slider-value-display" id="vowel_first_prefix_val">0.2</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-container">
+                            <label class="checkbox-group-label">Name Length Options</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <div class="checkbox-weight-row">
+                                        <div class="checkbox-label-group">
+                                            <input type="checkbox" id="block_count_2" name="block_counts" value="2" class="block-count-checkbox" checked>
+                                            <label for="block_count_2">2 Blocks</label>
+                                        </div>
+                                        <div class="weight-input-container">
+                                            <label for="block_count_2_weight" class="weight-label">Weight:</label>
+                                            <input type="number" id="block_count_2_weight" name="block_count_2_weight" min="1" max="10" value="2" class="weight-input number-input block-count-weight">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox-weight-row">
+                                        <div class="checkbox-label-group">
+                                            <input type="checkbox" id="block_count_3" name="block_counts" value="3" class="block-count-checkbox" checked>
+                                            <label for="block_count_3">3 Blocks</label>
+                                        </div>
+                                        <div class="weight-input-container">
+                                            <label for="block_count_3_weight" class="weight-label">Weight:</label>
+                                            <input type="number" id="block_count_3_weight" name="block_count_3_weight" min="1" max="10" value="1" class="weight-input number-input block-count-weight">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="checkbox-item">
+                                    <div class="checkbox-weight-row">
+                                        <div class="checkbox-label-group">
+                                            <input type="checkbox" id="block_count_4" name="block_counts" value="4" class="block-count-checkbox">
+                                            <label for="block_count_4">4 Blocks </label>
+                                        </div>
+                                        <div class="weight-input-container">
+                                            <label for="block_count_4_weight" class="weight-label">Weight:</label>
+                                            <input type="number" id="block_count_4_weight" name="block_count_4_weight" min="1" max="10" value="1" class="weight-input number-input block-count-weight">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End Column 1 -->
+
+                <!-- Column 2: Special Features -->
+                <div class="advanced-section">
+                    <h4>Special Features</h4>
+                    <p class="section-info">Add apostrophes, hyphens, or spaces.</p>
+
+                    <div class="control-stack">
+                        <div class="slider-stack">
+                            <div class="integrated-slider">
+                                <div class="integrated-slider-row">
+                                    <div class="integrated-slider-label" title="Probability (0.0 to 1.0) of adding special features">Special Features Probability</div>
+                                    <div class="slider-input-row">
+                                        <div class="integrated-slider-input">
+                                            <input type="range" id="special_features" name="special_features" min="0" max="1" step="0.1" value="0.2" class="value-slider">
+                                        </div>
+                                        <div class="integrated-slider-value slider-value-display" id="special_features_val">0.2</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="integrated-slider">
+                                <div class="integrated-slider-row">
+                                    <div class="integrated-slider-label" title="Maximum number of special features (', -, space) per name">Max Features Per Name</div>
+                                    <div class="slider-input-row">
+                                        <div class="integrated-slider-input">
+                                            <input type="range" id="max_special_features" name="max_special_features" min="0" max="3" step="1" value="1" class="value-slider">
+                                        </div>
+                                        <div class="integrated-slider-value slider-value-display" id="max_special_features_val">1</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-container">
+                            <label class="checkbox-group-label">Allowed Special Features</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="allow_apostrophes" name="allow_apostrophes" checked>
+                                    <label for="allow_apostrophes">Apostrophes (')</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="allow_hyphens" name="allow_hyphens" checked>
+                                    <label for="allow_hyphens">Hyphens (-)</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="allow_spaces" name="allow_spaces">
+                                    <label for="allow_spaces">Spaces ( )</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End Column 2 -->
+
+                <!-- Column 3: Character Modifications -->
+                <div class="advanced-section">
+                    <h4>Character Modifications</h4>
+                    <p class="section-info">Add diacritics (é, ü) or ligatures (æ, œ).</p>
+
+                    <div class="control-stack">
+                        <div class="slider-stack">
+                            <div class="integrated-slider">
+                                <div class="integrated-slider-row">
+                                    <div class="integrated-slider-label" title="Probability (0.0 to 1.0) of adding modifications">Modification Probability</div>
+                                    <div class="slider-input-row">
+                                        <div class="integrated-slider-input">
+                                            <input type="range" id="character_modifications" name="character_modifications" min="0" max="1" step="0.1" value="0.3" class="value-slider">
+                                        </div>
+                                        <div class="integrated-slider-value slider-value-display" id="character_modifications_val">0.3</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="integrated-slider">
+                                <div class="integrated-slider-row">
+                                    <div class="integrated-slider-label" title="Maximum number of modifications per name">Max Modifications Per Name</div>
+                                    <div class="slider-input-row">
+                                        <div class="integrated-slider-input">
+                                            <input type="range" id="max_modifications" name="max_modifications" min="0" max="3" step="1" value="1" class="value-slider">
+                                        </div>
+                                        <div class="integrated-slider-value slider-value-display" id="max_modifications_val">1</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-container">
+                            <label class="checkbox-group-label">Allowed Modifications</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="allow_diacritics" name="allow_diacritics" checked>
+                                    <label for="allow_diacritics">Diacritics (é, ü, etc.)</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="allow_ligatures" name="allow_ligatures" checked>
+                                    <label for="allow_ligatures">Ligatures (æ, œ, etc.)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End Column 3 -->
+            </div>
+        </div><!-- End Structure & Features Options -->
+
+        <!-- === Advanced Scoring Tab === -->
+        <div id="advanced-options" class="tab-content">
+            <h3>Advanced Scoring Parameters</h3>
+            <p class="section-info">Customize the technical rules that govern name generation and control how the system evaluates and selects potential names.</p>
+            <div class="advanced-sections-grid">
+                <!-- Section: Scoring Weights & Selection -->
+                <div class="advanced-section">
+                    <h4>Scoring Weights & Selection</h4>
+                    <p class="section-info">Balance how the generator prioritizes style matching versus pronunciation quality, and control how many name candidates are considered.</p>
+                    <div class="slider-stack">
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="How much to prioritize matching the 'Vibe' sliders (0.0 to 1.0)">Vibe Weight</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="weight_vibe" name="weight_vibe" min="0" max="1" step="0.1" value="0.4" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="weight_vibe_val">0.4</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="How much to prioritize good pronunciation and flow (0.0 to 1.0)">Compatibility Weight</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="weight_compatibility" name="weight_compatibility" min="0" max="1" step="0.1" value="0.6" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="weight_compatibility_val">0.6</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Number of top candidates considered for final selection">Candidates Considered</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="top_n_candidates" name="top_n_candidates" min="1" max="50" step="1" value="15" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="top_n_candidates_val">15</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Minimum score required; below this, selection is less random">Low Score Threshold</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="low_score_threshold" name="low_score_threshold" min="0" max="100" step="1" value="30" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="low_score_threshold_val">30</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Blacklist Penalties -->
+                <div class="advanced-section">
+                    <h4>Blacklist Penalties</h4>
+                    <p class="section-info">Set how strongly the generator avoids a predefined list of problematic letter combinations (higher = stronger penalty).</p>
+                    <div class="slider-stack">
+                        <!-- name attributes MUST match keys in app.py's SINGLE_ARG_SCORING_SETTERS -->
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for Level 1 (Most Severe) Blacklisted Combinations">Level 1 Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="blacklist_level1" name="blacklist_level1" min="0" max="100" step="1" value="95" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="blacklist_level1_val">95</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for Level 2 Blacklisted Combinations">Level 2 Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="blacklist_level2" name="blacklist_level2" min="0" max="100" step="1" value="70" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="blacklist_level2_val">70</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for Level 3 Blacklisted Combinations">Level 3 Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="blacklist_level3" name="blacklist_level3" min="0" max="100" step="1" value="45" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="blacklist_level3_val">45</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for Level 4 Blacklisted Combinations">Level 4 Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="blacklist_level4" name="blacklist_level4" min="0" max="100" step="1" value="25" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="blacklist_level4_val">25</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for Level 5 (Mildest) Blacklisted Combinations">Level 5 Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="blacklist_level5" name="blacklist_level5" min="0" max="100" step="1" value="10" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="blacklist_level5_val">10</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Repetition Controls -->
+                <div class="advanced-section">
+                    <h4>Repetition Controls</h4>
+                    <p class="section-info">Penalize repetitive sounds and letter patterns.</p>
+                    <div class="slider-stack">
+                        <!-- Repetition Penalties: name attributes MUST match keys in app.py's setters -->
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for repeating the exact same block consecutively (e.g., 'Araara')">Block Rep. Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="repetition_direct_block" name="penalty_repetition_direct_block" min="0" max="100" step="1" value="75" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="repetition_direct_block_val">75</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for repeating a two-block sequence (e.g., 'Aralaral')">Sequence Rep. Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="repetition_sequence" name="penalty_repetition_sequence" min="0" max="100" step="1" value="55" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="repetition_sequence_val">55</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for repeating syllables across block boundaries (e.g., 'risAris')">Syllable Rep. Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="repetition_syllable" name="penalty_repetition_syllable" min="0" max="100" step="1" value="60" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="repetition_syllable_val">60</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for repeating the same vowel across a block boundary (e.g., 'AraEl')">Vowel Rep. Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="repetition_vowel_across_boundary" name="penalty_repetition_vowel_across_boundary" min="0" max="100" step="1" value="20" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="repetition_vowel_across_boundary_val">20</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for three identical letters in a row (e.g., 'Grrr')">3 Letter Rep. Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="repetition_triple_letter" name="penalty_repetition_triple_letter" min="0" max="100" step="1" value="45" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="repetition_triple_letter_val">45</div>
+                            </div>
+                        </div>
+                        <!-- Repetition Multipliers -->
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Multiplier applied to Triple Letter penalty for common letters (l,r,s,n,m,e,o)">3 Letter Common Mult.</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="triple_letter_common_multiplier" name="penalty_repetition_triple_letter_common_multiplier" min="0" max="1" step="0.1" value="0.7" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="triple_letter_common_multiplier_val">0.7</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Multiplier applied to Syllable penalty for common single-letter syllables">Syllable Common Mult.</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="syllable_common_multiplier" name="penalty_repetition_syllable_common_multiplier" min="0" max="1" step="0.1" value="0.2" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="syllable_common_multiplier_val">0.2</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Boundary Controls -->
+                <div class="advanced-section">
+                    <h4>Boundary Controls</h4>
+                    <p class="section-info">Penalize awkward joins between blocks.</p>
+                    <div class="slider-stack">
+                        <!-- Boundary Pattern Penalties: name attributes MUST match keys in app.py's setters -->
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for three consonants in a row at boundary (e.g., 'a CCC b')">3 Consonants Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="boundary_consonants_3" name="penalty_boundary_consonants_3" min="0" max="100" step="1" value="35" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="boundary_consonants_3_val">35</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for four or more consonants at boundary">4+ Consonants Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="boundary_consonants_4plus" name="penalty_boundary_consonants_4plus" min="0" max="100" step="1" value="60" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="boundary_consonants_4plus_val">60</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for three or more vowels at boundary">3+ Vowels Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="boundary_vowels_3plus" name="penalty_boundary_vowels_3plus" min="0" max="100" step="1" value="50" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="boundary_vowels_3plus_val">50</div>
+                            </div>
+                        </div>
+                        <!-- Join Penalties -->
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for joining hard stop consonants (k,p,t,g,b,d)">Hard Stop Join Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="boundary_hard_stop_join" name="penalty_boundary_hard_stop_join" min="0" max="100" step="1" value="20" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="boundary_hard_stop_join_val">20</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for awkward vowel combinations at boundary (e.g., 'oa', 'iu')">Awkward Vowel Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="boundary_awkward_vowel_join" name="penalty_boundary_awkward_vowel_join" min="0" max="100" step="1" value="50" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="boundary_awkward_vowel_join_val">50</div>
+                            </div>
+                        </div>
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Penalty for consonant cluster ending block, followed by hard stop starting block">Cluster Penalty</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="boundary_cluster_hard_stop" name="penalty_boundary_cluster_hard_stop" min="0" max="100" step="1" value="25" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="boundary_cluster_hard_stop_val">25</div>
+                            </div>
+                        </div>
+                        <!-- Bonuses -->
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Bonus score for smooth transitions (e.g., liquid/nasal ending, vowel starting)">Smooth Transition Bonus</div>
+                                <div class="integrated-slider-input">
+                                    <input type="range" id="bonus_smooth_transition" name="bonus_smooth_transition" min="-50" max="50" step="1" value="15" class="value-slider"> <!-- name added -->
+                                </div>
+                                <div class="integrated-slider-value slider-value-display" id="bonus_smooth_transition_val">15</div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- End Boundary Controls Section -->
+            </div><!-- End Advanced Grid -->
+        </div><!-- End Advanced Options -->
+
+    </form> <!-- End generator-form -->
+
+</div> <!-- End generator-container -->
+{% endblock %}
+
+{% block extra_js %}{% endblock %}

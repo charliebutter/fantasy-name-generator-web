@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}About - Fantasy Name Generator{% endblock %}
+
+{% block content %}
+<div class="generator-container">
+    <h2>About Fantasy Name Generator</h2>
+    
+    <div class="about-panel panel-gradient">
+        <p class="about-intro">
+            A powerful tool for creating fantasy character names with customizable vibes, themes, and linguistic features.
+            Perfect for writers, game masters, and worldbuilders seeking names that fit specific fantasy cultures.
+        </p>
+    </div>
+
+    <!-- How It Works - Full Width -->
+    <div class="advanced-section full-width">
+        <h4>How It Works</h4>
+        <!-- <p class="section-info">The engine behind our unique generation system</p> -->
+        
+        <div class="about-content">
+            <p>
+                This generator creates names by intelligently combining letter "blocks" based on 
+                configurable parameters. Using a sophisticated scoring system, it selects blocks 
+                that work well together and match your desired characteristics.
+            </p>
+            <p>
+                Each generated name undergoes compatibility checks for pronunciation, 
+                aesthetic appeal, and thematic consistency.
+            </p>
+        </div>
+    </div>
+    
+    <!-- Key Features - Full Width -->
+    <div class="advanced-section full-width">
+        <h4>Key Features</h4>
+        <!-- <p class="section-info">Powerful customization options</p> -->
+        
+        <div class="about-content">
+            <ul class="feature-list">
+                <li>
+                    <strong>Theme Support:</strong> Generate names with different cultural themes like Elven, 
+                    Dwarven, Orcish, and more.
+                </li>
+                <li>
+                    <strong>Character Vibes:</strong> Fine-tune name attributes with five different parameters: Alignment, 
+                    Elegance, Quirkiness, Strength, and Gender.
+                </li>
+                <li>
+                    <strong>Special Features:</strong> Enhance names with apostrophes, hyphens, and diacritical marks 
+                    (like é, ü, æ) that are intelligently placed based on linguistic rules.
+                </li>
+                <li>
+                    <strong>Advanced Scoring System:</strong> Names are evaluated on multiple criteria including 
+                    pronunciation flow, repetition avoidance, and thematic consistency.
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Technology - Full Width -->
+    <div class="advanced-section full-width">
+        <h4>Technology</h4>
+        <!-- <p class="section-info">How this project was built</p> -->
+        
+        <div class="about-content">
+            <p>
+                This project was developed using Python with the Flask web framework for the backend,
+                and HTML, CSS, and JavaScript for the frontend. The name
+                generation engine uses custom algorithms for block selection and compatibility scoring.
+            </p>
+            <p>
+                Development was assisted by AI tools to help with code generation, styling, and 
+                optimization.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add any about page specific JavaScript here if needed
+</script>
+{% endblock %}
