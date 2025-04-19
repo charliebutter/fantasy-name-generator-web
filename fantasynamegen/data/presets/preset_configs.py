@@ -33,7 +33,7 @@ def create_default_config() -> FantasyNameConfig:
     config.set_fem_masc(1, 10)
 
     # Structure (Explicit defaults for UI consistency)
-    config.set_force_block_count([2, 2, 3]) # Common starting point
+    config.set_force_block_count([2]) # Common starting point
     config.set_vowel_first_prefix(0.2)   # Common default preference
 
     # Features (Explicit defaults)
