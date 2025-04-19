@@ -553,6 +553,7 @@ button:disabled, .button:disabled {
     padding-bottom: 0.4rem;
     border-bottom: 1px dashed var(--border-color);
     margin-bottom: 0.8rem;
+    color: var(--text-light);
 }
 
 /* Grid layout for advanced sections */
@@ -708,7 +709,7 @@ button:disabled, .button:disabled {
 
 .vibe-slider-container .integrated-slider-label {
     font-size: 1rem;
-    color: var(--primary-color);
+    color: var(--text-light);
     font-weight: bold;
     font-family: var(--header-font);
     margin-bottom: 0;
