@@ -566,9 +566,6 @@ button:disabled, .button:disabled {
 /* ============================================= */
 /* ===== STRUCTURE TAB SPECIFIC STYLES ===== */
 /* ============================================= */
-/* ============================================= */
-/* ===== STRUCTURE TAB SPECIFIC STYLES ===== */
-/* ============================================= */
 #structure-options .advanced-sections-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

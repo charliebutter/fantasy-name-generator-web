@@ -65,11 +65,6 @@ PRESET_FUNCTIONS: Dict[str, Optional[callable]] = {
 PRESET_FUNCTIONS = {k: v for k, v in PRESET_FUNCTIONS.items() if v is not None}
 log.info(f"Loaded presets: {list(PRESET_FUNCTIONS.keys())}")
 
-# --- Flask App Initialization ---
-app = Flask(__name__)
-# Use environment variable for secret key in production
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a_sEcUrE_dEv_kEy_CHANGEME") # Use a secure default dev key
-
 
 # --- Helper Functions for Parsing ---
 
@@ -652,10 +647,5 @@ def get_preset(preset_id: str) -> Response:
         log.error(f"Error getting or processing preset '{preset_id}': {e}", exc_info=True)
         return jsonify({'success': False, 'error': f"An error occurred while loading preset '{preset_id}'."})
 
-
 # --- Main Execution ---
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    is_debug = os.environ.get("FLASK_DEBUG", "0").lower() in ("true", "1", "t")
-    app.run(debug=is_debug, port=port, host='0.0.0.0')
-    
+app = Flask(__name__)
