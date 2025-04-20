@@ -65,6 +65,11 @@ PRESET_FUNCTIONS: Dict[str, Optional[callable]] = {
 PRESET_FUNCTIONS = {k: v for k, v in PRESET_FUNCTIONS.items() if v is not None}
 log.info(f"Loaded presets: {list(PRESET_FUNCTIONS.keys())}")
 
+# --- Flask App Initialization ---
+app = Flask(__name__)
+# Use environment variable for secret key in production
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "a_sEcUrE_dEv_kEy_CHANGEME") # Use a secure default dev key
+
 
 # --- Helper Functions for Parsing ---
 
@@ -542,19 +547,16 @@ def config_to_dict(config) -> Dict[str, Any]:
 
 # --- Flask Routes ---
 
-@app.route('/')
 def index() -> str:
     """Render the main generator page."""
     log.info("Serving route: / (index)")
     return render_template('index.html')
 
-@app.route('/about')
 def about() -> str:
     """Render the about page."""
     log.info("Serving route: /about")
     return render_template('about.html')
 
-@app.route('/generate-multiple', methods=['POST'])
 def generate_multiple() -> Response:
     """
     API endpoint to generate multiple fantasy names based on form parameters.
@@ -598,7 +600,6 @@ def generate_multiple() -> Response:
         log.error(f"Unexpected error in /generate-multiple: {e}", exc_info=True)
         return jsonify({'success': False, 'error': 'An internal server error occurred during name generation.'})
 
-@app.route('/get-preset/<string:preset_id>')
 def get_preset(preset_id: str) -> Response:
     """
     API endpoint to retrieve a preset configuration as JSON.
@@ -646,6 +647,3 @@ def get_preset(preset_id: str) -> Response:
     except Exception as e:
         log.error(f"Error getting or processing preset '{preset_id}': {e}", exc_info=True)
         return jsonify({'success': False, 'error': f"An error occurred while loading preset '{preset_id}'."})
-
-# --- Main Execution ---
-app = Flask(__name__)
