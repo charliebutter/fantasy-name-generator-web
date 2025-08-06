@@ -58,9 +58,9 @@ def create_default_config() -> FantasyNameConfig:
     scoring.set_repetition_penalties(
         direct_block=75.0,
         sequence=55.0,
-        syllable=60.0,
+        syllable=80.0,
         vowel_across_boundary=20.0,
-        triple_letter=45.0
+        triple_letter=85.0
     )
 
     # Repetition Multipliers (Explicitly set to class defaults)
@@ -68,8 +68,8 @@ def create_default_config() -> FantasyNameConfig:
 
     # Boundary Pattern Penalties (Explicit defaults)
     scoring.set_boundary_penalties(
-        consonants_3=35.0,
-        consonants_4plus=60.0,
+        consonants_3=60.0,
+        consonants_4plus=80.0,
         vowels_3plus=50.0
     )
 

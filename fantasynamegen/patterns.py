@@ -32,14 +32,14 @@ class ScoringConfig:
         # Repetition penalties
         self.penalty_repetition_direct_block: float = 75.0
         self.penalty_repetition_sequence: float = 55.0
-        self.penalty_repetition_syllable: float = 60.0
+        self.penalty_repetition_syllable: float = 80.0
         self.penalty_repetition_vowel_across_boundary: float = 20.0
-        self.penalty_repetition_triple_letter: float = 45.0
+        self.penalty_repetition_triple_letter: float = 85.0
         self.penalty_repetition_triple_letter_common_multiplier: float = 0.7 # Applied to triple_letter penalty
         self.penalty_repetition_syllable_common_multiplier: float = 0.2 # Applied to syllable penalty for common doubles
         # Boundary V/C Pattern penalties
-        self.penalty_boundary_consonants_3: float = 35.0 # For CCC
-        self.penalty_boundary_consonants_4plus: float = 60.0 # For CCCC+
+        self.penalty_boundary_consonants_3: float = 60.0 # For CCC
+        self.penalty_boundary_consonants_4plus: float = 80.0 # For CCCC+
         self.penalty_boundary_vowels_3plus: float = 50.0 # For VVV+
         # Specific Join penalties
         self.penalty_boundary_hard_stop_join: float = 20.0
