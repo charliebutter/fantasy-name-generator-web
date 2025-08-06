@@ -24,7 +24,7 @@ class ScoringConfig:
 
         # --- Candidate Selection ---
         self.top_n_candidates: int = 20
-        self.low_score_threshold: float = 30.0 # Below this, fallback triggers
+        self.low_score_threshold: float = 60.0 # Below this, fallback triggers
 
         # --- Compatibility Penalties ---
         # Blacklist penalties (per level)

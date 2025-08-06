@@ -49,7 +49,7 @@ def create_default_config() -> FantasyNameConfig:
     # --- ScoringConfig Settings (Explicit defaults) ---
     scoring.set_weights(vibe=0.4, compatibility=0.6)
     scoring.set_top_n_candidates(20)
-    scoring.set_low_score_threshold(30.0)
+    scoring.set_low_score_threshold(60.0)
 
     # Blacklist Penalties (Explicitly set to class defaults)
     scoring.set_blacklist_penalties(level1=95.0, level2=70.0, level3=45.0, level4=25.0, level5=10.0)
@@ -116,7 +116,7 @@ def create_high_elf_config() -> FantasyNameConfig:
     # --- ScoringConfig Settings ---
     scoring.set_weights(vibe=0.40, compatibility=0.60) # Custom (increased vibe influence)
     scoring.set_top_n_candidates(12)        # Custom (increased variation)
-    scoring.set_low_score_threshold(58.0)   # Custom (higher quality threshold)
+    scoring.set_low_score_threshold(60.0)   # Custom (higher quality threshold)
     
     scoring.set_blacklist_penalties(
         level1=95.0,                        # Default (explicitly set)
