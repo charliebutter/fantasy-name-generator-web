@@ -545,16 +545,19 @@ def config_to_dict(config) -> Dict[str, Any]:
 
 # --- Flask Routes ---
 
+@app.route('/')
 def index() -> str:
     """Render the main generator page."""
     log.info("Serving route: / (index)")
     return render_template('index.html')
 
+@app.route('/about')
 def about() -> str:
     """Render the about page."""
     log.info("Serving route: /about")
     return render_template('about.html')
 
+@app.route('/generate-multiple', methods=['POST'])
 def generate_multiple() -> Response:
     """
     API endpoint to generate multiple fantasy names based on form parameters.
@@ -598,6 +601,7 @@ def generate_multiple() -> Response:
         log.error(f"Unexpected error in /generate-multiple: {e}", exc_info=True)
         return jsonify({'success': False, 'error': 'An internal server error occurred during name generation.'})
 
+@app.route('/get-preset/<preset_id>')
 def get_preset(preset_id: str) -> Response:
     """
     API endpoint to retrieve a preset configuration as JSON.
@@ -645,3 +649,9 @@ def get_preset(preset_id: str) -> Response:
     except Exception as e:
         log.error(f"Error getting or processing preset '{preset_id}': {e}", exc_info=True)
         return jsonify({'success': False, 'error': f"An error occurred while loading preset '{preset_id}'."})
+
+
+# --- Main Execution ---
+if __name__ == '__main__':
+    log.info("Starting Flask development server...")
+    app.run(debug=True, host='0.0.0.0', port=5000)

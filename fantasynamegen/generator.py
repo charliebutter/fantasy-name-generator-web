@@ -37,15 +37,15 @@ class FantasyNameConfig:
         self.theme: str = "default"  # New theme property with "default" as the default value
 
         # Vibe Scales
-        self.good_evil: Optional[Tuple[int, int]] = None
-        self.elegant_rough: Optional[Tuple[int, int]] = None
-        self.common_exotic: Optional[Tuple[int, int]] = None
-        self.weak_powerful: Optional[Tuple[int, int]] = None
-        self.fem_masc: Optional[Tuple[int, int]] = None
+        self.good_evil: Optional[Tuple[int, int]] = (1, 10)
+        self.elegant_rough: Optional[Tuple[int, int]] = (1, 10)
+        self.common_exotic: Optional[Tuple[int, int]] = (1, 10)
+        self.weak_powerful: Optional[Tuple[int, int]] = (1, 10)
+        self.fem_masc: Optional[Tuple[int, int]] = (1, 10)
 
         # Structure
-        self.force_block_counts: Optional[List[int]] = None
-        self.vowel_first_prefix: Optional[Union[bool, float]] = None
+        self.force_block_counts: Optional[List[int]] = [2]
+        self.vowel_first_prefix: Optional[Union[bool, float]] = 0.2
 
         # Features
         self.special_features: float = 0.2
