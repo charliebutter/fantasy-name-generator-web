@@ -187,6 +187,34 @@ def is_vowel(char: str) -> bool:
 def get_vowel_consonant_pattern(text: str) -> str:
     return ''.join('V' if is_vowel(char) else 'C' for char in text.lower())
 
+def score_length_preference(block_text: str, name_length_pref: Optional[float] = None) -> float:
+    """Score based on block length and name_length preference (0.0-1.0)."""
+    if name_length_pref is None:
+        return 50.0  # Neutral score if no preference
+    
+    block_length = len(block_text)
+    
+    # More aggressive scoring based on length preference
+    # Use exponential scaling to make the preference more pronounced
+    if block_length <= 3:
+        # Short blocks: high score when name_length is low
+        # Use quadratic function for more pronounced effect
+        score = 100.0 * ((1.0 - name_length_pref) ** 2)
+    elif block_length == 4:
+        # Medium blocks: neutral with slight bias
+        if name_length_pref < 0.5:
+            score = 60.0  # Slightly favor when preferring shorter
+        else:
+            score = 40.0  # Slightly disfavor when preferring longer
+    elif block_length <= 6:
+        # Long blocks: high score when name_length is high
+        score = 100.0 * (name_length_pref ** 2)
+    else:
+        # Very long blocks: extremely high score when preferring long names
+        score = 100.0 * (name_length_pref ** 1.5)
+    
+    return max(0.0, min(100.0, score))
+
 # --- Scoring Functions ---
 def score_vibe_match(block_vibes: Dict, target_vibes: Dict) -> float:
     if not block_vibes or not isinstance(block_vibes, dict): return 50.0
@@ -497,7 +525,8 @@ class PatternBlocks:
                                    blocks_used: List[str],
                                    target_vibes: Dict,
                                    vowel_first_pref: Optional[Union[bool, float]],
-                                   scoring_config: ScoringConfig
+                                   scoring_config: ScoringConfig,
+                                   name_length_pref: Optional[float] = None
                                    ) -> str:
         """ Internal helper using scoring config. """
         err_prefix = f"Err{block_type.capitalize()}";
@@ -543,7 +572,17 @@ class PatternBlocks:
                     # Pass scoring_config to score_compatibility
                     compatibility_score = 100.0 if not last_block else score_compatibility(last_block, block_text, blocks_used, scoring_config)
                     # Use weights from scoring_config
-                    total_score = (scoring_config.weight_vibe * vibe_score) + (scoring_config.weight_compatibility * compatibility_score)
+                    base_score = (scoring_config.weight_vibe * vibe_score) + (scoring_config.weight_compatibility * compatibility_score)
+                    
+                    # Apply length preference as a modifier
+                    if name_length_pref is not None:
+                        length_score = score_length_preference(block_text, name_length_pref)
+                        # Use length score as a more aggressive multiplier (0.1-2.0 range)
+                        length_modifier = 0.1 + (length_score / 100.0 * 1.9)
+                        total_score = base_score * length_modifier
+                    else:
+                        total_score = base_score
+                    
                     if isinstance(total_score, (int, float)): candidate_scores.append((float(total_score), block_text))
                 except Exception as score_err: print(f"ERROR scoring block '{block_text}': {score_err}. Skipping."); continue
 
@@ -573,22 +612,26 @@ class PatternBlocks:
     def get_compatible_prefix(self, blocks_used: List[str], scoring_config: Optional[ScoringConfig] = None, **kwargs) -> str:
         config = scoring_config or ScoringConfig() # Use default if None provided
         vowel_first_pref = kwargs.pop('vowel_first', None)
-        return self._get_scored_block_internal('prefix', self.prefixes, blocks_used, kwargs, vowel_first_pref, config)
+        name_length_pref = kwargs.pop('name_length', None)
+        return self._get_scored_block_internal('prefix', self.prefixes, blocks_used, kwargs, vowel_first_pref, config, name_length_pref)
 
     def get_compatible_bridge(self, blocks_used: List[str], scoring_config: Optional[ScoringConfig] = None, **kwargs) -> str:
         config = scoring_config or ScoringConfig()
         if not blocks_used: return "ErrBridgeConfig"
-        return self._get_scored_block_internal('bridge', self.bridges, blocks_used, kwargs, None, config)
+        name_length_pref = kwargs.pop('name_length', None)
+        return self._get_scored_block_internal('bridge', self.bridges, blocks_used, kwargs, None, config, name_length_pref)
 
     def get_compatible_middle(self, blocks_used: List[str], scoring_config: Optional[ScoringConfig] = None, **kwargs) -> str:
         config = scoring_config or ScoringConfig()
         if not blocks_used: return "ErrMiddleConfig"
-        return self._get_scored_block_internal('middle', self.middles, blocks_used, kwargs, None, config)
+        name_length_pref = kwargs.pop('name_length', None)
+        return self._get_scored_block_internal('middle', self.middles, blocks_used, kwargs, None, config, name_length_pref)
 
     def get_compatible_suffix(self, blocks_used: List[str], scoring_config: Optional[ScoringConfig] = None, **kwargs) -> str:
         config = scoring_config or ScoringConfig()
         if not blocks_used: return "ErrSuffixConfig"
-        return self._get_scored_block_internal('suffix', self.suffixes, blocks_used, kwargs, None, config)
+        name_length_pref = kwargs.pop('name_length', None)
+        return self._get_scored_block_internal('suffix', self.suffixes, blocks_used, kwargs, None, config, name_length_pref)
 
 
 # --- Global instance and convenience functions ---
