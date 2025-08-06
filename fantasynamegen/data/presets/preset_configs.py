@@ -68,7 +68,7 @@ def create_default_config() -> FantasyNameConfig:
 
     # Boundary Pattern Penalties (Explicit defaults)
     scoring.set_boundary_penalties(
-        consonants_3=60.0,
+        consonants_3=50.0,
         consonants_4plus=80.0,
         vowels_3plus=50.0
     )
