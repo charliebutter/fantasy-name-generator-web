@@ -35,7 +35,6 @@ class ScoringConfig:
         self.penalty_repetition_syllable: float = 80.0
         self.penalty_repetition_vowel_across_boundary: float = 20.0
         self.penalty_repetition_triple_letter: float = 85.0
-        self.penalty_repetition_triple_letter_common_multiplier: float = 0.7 # Applied to triple_letter penalty
         self.penalty_repetition_syllable_common_multiplier: float = 0.2 # Applied to syllable penalty for common doubles
         # Boundary V/C Pattern penalties
         self.penalty_boundary_consonants_3: float = 50.0 # For CCC
@@ -97,11 +96,8 @@ class ScoringConfig:
             self.penalty_repetition_triple_letter = triple_letter
         return self
 
-    def set_repetition_multipliers(self, triple_letter_common: float = None,
-                                   syllable_common: float = None) -> 'ScoringConfig':
+    def set_repetition_multipliers(self, syllable_common: float = None) -> 'ScoringConfig':
         """Set multipliers for common repetitions."""
-        if triple_letter_common is not None and triple_letter_common >= 0:
-            self.penalty_repetition_triple_letter_common_multiplier = triple_letter_common
         if syllable_common is not None and syllable_common >= 0:
             self.penalty_repetition_syllable_common_multiplier = syllable_common
         return self
@@ -217,8 +213,7 @@ def score_compatibility(last_block: str, next_block: str, blocks_used: List[str]
             if len(last_block) >= 2 and last_block[-2].lower() == last_block[-1].lower(): is_triple = True
             if len(next_block) >= 2 and next_block[0].lower() == next_block[1].lower(): is_triple = True
             if is_triple:
-                penalty_multiplier = penalties.penalty_repetition_triple_letter_common_multiplier if last_block[-1].lower() in "lrsnmeo" else 1.0
-                penalty = penalties.penalty_repetition_triple_letter * penalty_multiplier
+                penalty = penalties.penalty_repetition_triple_letter
                 score -= penalty
                 # penalty_tag = "TripleLetCommon" if penalty_multiplier < 1.0 else "TripleLet"
                 # penalty_reasons.append(f"{penalty_tag}({penalty:.0f})")

@@ -116,7 +116,6 @@ MULTI_ARG_SCORING_SETTERS = {
         'triple_letter': 'penalty_repetition_triple_letter'
     },
     'set_repetition_multipliers': {
-        'triple_letter_common': 'penalty_repetition_triple_letter_common_multiplier',
         'syllable_common': 'penalty_repetition_syllable_common_multiplier'
     },
     'set_boundary_penalties': {
@@ -510,7 +509,6 @@ def config_to_dict(config) -> Dict[str, Any]:
             }
             # Repetition Multipliers (round to 2 decimals)
             scoring_dict['repetition_multipliers'] = {
-                'triple_letter_common': get_rounded_score_attr('penalty_repetition_triple_letter_common_multiplier', 0.7, 2),
                 'syllable_common': get_rounded_score_attr('penalty_repetition_syllable_common_multiplier', 0.2, 2)
             }
             # Boundary Penalties

@@ -375,7 +375,7 @@ function serializeFormSettings() {
     if (Object.keys(repPen).length > 0) scoring.rpp = repPen;
 
     const repMult = {};
-    const multMap = { tlc: 'triple_letter_common_multiplier', sc: 'syllable_common_multiplier'};
+    const multMap = { sc: 'syllable_common_multiplier'};
      for (const [key, id] of Object.entries(multMap)) {
         const current = floatVal(id);
         if (current !== null && current !== DEFAULTS.rep_mult[key]) repMult[key] = current;
@@ -553,7 +553,7 @@ function deserializeAndApplySettings(encodedSettings) {
                 }
             }
              if (sc.rpm) { // Repetition multipliers
-                const multMap = { tlc: 'triple_letter_common_multiplier', sc: 'syllable_common_multiplier'};
+                const multMap = { sc: 'syllable_common_multiplier'};
                  for (const [key, id] of Object.entries(multMap)) {
                      if (sc.rpm[key] !== undefined) updateSlider(id, sc.rpm[key]);
                 }
@@ -862,7 +862,7 @@ function applyPresetToForm(config) {
         const defaultLowThresh = 25.0;
         const defaultBLPen = { 1: 95.0, 2: 70.0, 3: 45.0, 4: 25.0, 5: 10.0 };
         const defaultRepPen = { direct_block: 75.0, sequence: 55.0, syllable: 50.0, vowel_across_boundary: 20.0, triple_letter: 30.0 };
-        const defaultRepMult = { triple_letter_common: 0.7, syllable_common: 0.2 };
+        const defaultRepMult = { syllable_common: 0.2 };
         const defaultBoundPen = { consonants_3: 25.0, consonants_4plus: 45.0, vowels_3plus: 50.0 };
         const defaultJoinPen = { hard_stop_join: 20.0, awkward_vowel_join: 40.0, cluster_hard_stop: 25.0 };
         const defaultBonusSmooth = 15.0;
@@ -900,7 +900,7 @@ function applyPresetToForm(config) {
          }
 
          // Apply repetition multipliers
-         const multMap = { triple_letter_common: 'triple_letter_common_multiplier', syllable_common: 'syllable_common_multiplier'};
+         const multMap = { syllable_common: 'syllable_common_multiplier'};
          if (sc.repetition_multipliers) {
              for (const [key, id] of Object.entries(multMap)) {
                  updateSlider(id, sc.repetition_multipliers[key] ?? defaultRepMult[key]);

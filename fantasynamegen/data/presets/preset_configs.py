@@ -64,7 +64,7 @@ def create_default_config() -> FantasyNameConfig:
     )
 
     # Repetition Multipliers (Explicitly set to class defaults)
-    scoring.set_repetition_multipliers(triple_letter_common=0.7, syllable_common=0.2)
+    scoring.set_repetition_multipliers(syllable_common=0.2)
 
     # Boundary Pattern Penalties (Explicit defaults)
     scoring.set_boundary_penalties(
@@ -135,7 +135,6 @@ def create_high_elf_config() -> FantasyNameConfig:
     )
     
     scoring.set_repetition_multipliers(
-        triple_letter_common=0.7,           # Custom (reduced slightly)
         syllable_common=0.15                # Custom (reduced further)
     )
     
@@ -200,7 +199,7 @@ def create_dark_elf_config() -> FantasyNameConfig:
         vowel_across_boundary=95.0,         # Custom
         triple_letter=80.0                  # Custom
     )
-    # scoring.set_repetition_multipliers(triple_letter_common=0.7, syllable_common=0.2) # Default
+    # scoring.set_repetition_multipliers(syllable_common=0.2) # Default
     scoring.set_boundary_penalties(
         consonants_3=40.0,                  # Custom
         consonants_4plus=75.0,              # Custom
@@ -254,7 +253,7 @@ def create_fae_config() -> FantasyNameConfig:
         vowel_across_boundary=70.0,         # Custom
         triple_letter=98.0                  # Custom
     )
-    # scoring.set_repetition_multipliers(triple_letter_common=0.7, syllable_common=0.2) # Default
+    # scoring.set_repetition_multipliers(syllable_common=0.2) # Default
     scoring.set_boundary_penalties(
         consonants_3=99.9,                  # Custom
         consonants_4plus=100.0,             # Custom
@@ -323,7 +322,6 @@ def create_desert_nomad_config() -> FantasyNameConfig:
     )
 
     scoring.set_repetition_multipliers(
-        triple_letter_common=0.3,  # Custom (reduced)
         syllable_common=0.1  # Custom (reduced further)
     )
 
@@ -394,7 +392,6 @@ def create_druid_config() -> FantasyNameConfig:
     )
 
     scoring.set_repetition_multipliers(
-        triple_letter_common=0.25,  # Custom (reduced further)
         syllable_common=0.05  # Custom (minimal)
     )
 
@@ -447,7 +444,7 @@ def create_orc_config() -> FantasyNameConfig:
     scoring.set_low_score_threshold(20.0)   # Custom
     # scoring.set_blacklist_penalties(level1=95.0, level2=70.0, level3=45.0, level4=25.0, level5=10.0) # Default
     # scoring.set_repetition_penalties(direct_block=75.0, sequence=55.0, syllable=50.0, vowel_across_boundary=20.0, triple_letter=30.0) # Default
-    # scoring.set_repetition_multipliers(triple_letter_common=0.7, syllable_common=0.2) # Default
+    # scoring.set_repetition_multipliers(syllable_common=0.2) # Default
     scoring.set_boundary_penalties(
         consonants_3=15.0,                  # Custom
         consonants_4plus=31.5,              # Custom
@@ -501,7 +498,7 @@ def create_dwarf_config() -> FantasyNameConfig:
         vowel_across_boundary=16.0,         # Custom
         # triple_letter=30.0                # Default
     )
-    # scoring.set_repetition_multipliers(triple_letter_common=0.7, syllable_common=0.2) # Default
+    # scoring.set_repetition_multipliers(syllable_common=0.2) # Default
     scoring.set_boundary_penalties(
         consonants_3=50.0,                  # Custom
         # consonants_4plus=45.0,            # Default
