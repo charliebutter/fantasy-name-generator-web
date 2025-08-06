@@ -23,7 +23,7 @@ class ScoringConfig:
         self.weight_compatibility: float = 0.6
 
         # --- Candidate Selection ---
-        self.top_n_candidates: int = 15
+        self.top_n_candidates: int = 20
         self.low_score_threshold: float = 30.0 # Below this, fallback triggers
 
         # --- Compatibility Penalties ---
@@ -44,7 +44,7 @@ class ScoringConfig:
         # Specific Join penalties
         self.penalty_boundary_hard_stop_join: float = 20.0
         self.penalty_boundary_awkward_vowel_join: float = 50.0
-        self.penalty_boundary_cluster_hard_stop: float = 25.0
+        self.penalty_boundary_cluster_hard_stop: float = 50.0
 
         # --- Compatibility Bonuses ---
         self.bonus_smooth_transition: float = 15.0

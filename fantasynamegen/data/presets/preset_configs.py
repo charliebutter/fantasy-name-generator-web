@@ -48,7 +48,7 @@ def create_default_config() -> FantasyNameConfig:
 
     # --- ScoringConfig Settings (Explicit defaults) ---
     scoring.set_weights(vibe=0.4, compatibility=0.6)
-    scoring.set_top_n_candidates(15)
+    scoring.set_top_n_candidates(20)
     scoring.set_low_score_threshold(30.0)
 
     # Blacklist Penalties (Explicitly set to class defaults)
@@ -77,7 +77,7 @@ def create_default_config() -> FantasyNameConfig:
     scoring.set_join_penalties(
         hard_stop_join=20.0,
         awkward_vowel_join=50.0,
-        cluster_hard_stop=25.0
+        cluster_hard_stop=50.0
     )
 
     # Compatibility Bonuses (Explicit defaults)
