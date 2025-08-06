@@ -250,23 +250,15 @@ def parse_form_data(form_data: ImmutableMultiDict):
             config.vowel_first_prefix = None
 
         # Name Length Preference (Float 0.0-1.0 from Slider)
+        # NOTE: Form parsing kept for future implementation, but functionality is currently disabled
         raw_name_length = form_data.get('name_length')
-        log.debug(f"Raw name_length: '{raw_name_length}'")
+        log.debug(f"Raw name_length: '{raw_name_length}' (parsed but not used)")
         name_length_pref = safe_float(raw_name_length) # Parse as float
-        # Setter expects float 0.0-1.0 or None
         if name_length_pref is not None:
-            try:
-                # Clamp value to 0.0-1.0 just in case slider allows out-of-range values
-                clamped_length = max(0.0, min(1.0, name_length_pref))
-                config.set_name_length(clamped_length)
-                log.info(f"Config name_length set to: {config.name_length}")
-            except (ValueError, TypeError) as e:
-                 log.warning(f"Invalid name length '{raw_name_length}' for setter: {e}")
-                 config.name_length = 0.5 # Fallback to default
+            clamped_length = max(0.0, min(1.0, name_length_pref))
+            log.info(f"Name length preference parsed: {clamped_length} (not implemented)")
         else:
-            # Log if not submitted or invalid format
-            log.info("No name_length submitted or invalid format. Using default (0.5).")
-            config.name_length = 0.5
+            log.info("No name_length submitted or invalid format (not implemented).")
 
         # --- Special Features ---
         raw_sp_prob = form_data.get('special_features')

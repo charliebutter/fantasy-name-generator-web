@@ -11,6 +11,7 @@ import random
 import math
 import traceback
 from typing import List, Dict, Optional, Union, Tuple, Set, Any
+from .data.blacklisted_combos import BLACKLISTED_COMBOS_BY_LEVEL
 
 # --- Scoring Configuration ---
 
@@ -133,52 +134,6 @@ class ScoringConfig:
         return self
 
 
-# BLACKLISTED_COMBOS_BY_LEVEL - Remains the same as Tuned v5
-BLACKLISTED_COMBOS_BY_LEVEL = {
-    5: ["thl", "thr", "sht", "shn", "skr", "spl", "spr", "str", "chth", "phth", "oue"],
-    4: ["bk", "bp", "bd", "db", "dp", "dk", "gb", "gp", "gd", "kb", "kp", "kd", "pb", "pk", "pd", "tb", "tp",
-        "sb", "sd", "sg", "sv", "szk", "szp", "szt", "szd", "sq",
-        "rbg", "rdz", "rks", "rxk", "rxg", "rxd", "rxb", "rpz", "rtz",
-        "aoo", "eoo", "ioo", "ouu", "yuu", "aeu", "eiu", "iou", "oau", "uai",
-        "aio", "eao", "iao", "oai", "uei", "aoi", "eei", "iui", "oeo", "uau", "iiu", "uuo", "uui",
-        "jq", "qj", "qx", "xq", "jx", "xj", "vq", "qv", "wq", "qw", "zq", "qz",
-        "cq", "qc", "gq", "qg", "kq", "qk", "pq", "qp", "tq", "qt",
-        "bz", "dz", "gz", "vz",
-        "ao", "eo", "iu", "oa", "oe", "ua", "ue", "ui", "uo", "uy", "yi", "iy"],
-    3: ["kh", "gh", "bh", "dh", "nj", "mj", "bj", "gj", "dj", "sf", "ft", "kt", "pt",
-        "bn", "cn", "fn", "gm", "mn", "pf",
-        "qf", "qm", "qn", "qv", "qw", "qy", "wx", "wy",
-        "nzr", "nzl", "nzt", "nzd", "nzg", "mzr", "mzl", "ndg", "nkg", "nbg", "nkd", "ngz",
-        "nkb", "nkp", "nkt", "npk", "npg", "ndb", "ndp", "ndt", "ntd", "ntb", "ntp", "mgd", "mgz",
-        "mkb", "mkp", "mkt", "mtk", "mpk", "mpg", "mbd", "mbg", "mdb", "mdg", "mgb", "mgd",
-        "aie", "eie", "oie", "uie", "aiu", "oiu", "iua", "uio", "ioi", "ooi"],
-    2: ["qk", "qp", "qz", "jx", "jq", "jz", "vz", "vx", "vq", "wx", "wq", "wz",
-        "bv", "cj", "dg", "fv", "gj", "kg", "td", "dt", "bt", "gt",
-        "bsk", "bsp", "bst", "dsk", "dsp", "dst", "gsk", "gsp", "gst",
-        "rcb", "rcd", "rcg", "rdg", "rfg", "rkg", "rpg", "rtg", "rjb", "rjd", "rjg", "rjk",
-        "rvb", "rvd", "rvg", "rvk", "rvp", "rvt",
-        "ssx", "ssz", "szs", "szx", "xss", "xsz", "zss", "zsx", "zsz", "xzs", "xzz", "zxs",
-        "zxz", "scz", "szc", "zcs", "zcz", "tzs", "tsz", "zts", "ztz"],
-    1: ["qxz", "jqx", "vzx", "wzx", "zxq", "xqz", "xzq", "zqx", "qzx", "bcdn", "ghjk",
-        "bscr", "bzdr", "ckstr", "dscr", "dspr", "dzdr", "fthm", "gscr", "gspr", "gzdr",
-        "kstr", "kspr", "kzdr", "lsthr", "mscr", "mspr", "mzdr", "nscr", "nspr", "nzdr",
-        "pscr", "pspr", "pzdr", "rscr", "rspr", "rzdr", "sfth", "sfthr", "sktr", "skstr",
-        "tscr", "tspr", "tzdr", "vscr", "vspr", "vzdr", "xscr", "xspr", "xzdr", "zscr", "zspr", "zzdr",
-        "rgrv", "zrz", "zssx", "tkt", "pkt", "dkt", "gkt", "bkt", "fkt",
-        "zbl", "zdl", "zgl", "zkl", "zpl", "zrp", "zrt", "zrv", "zrx", "zrz", "ztl",
-        "zml", "znl", "zkw", "zpw", "ztw", "zjr", "zjl", "zhw",
-        "xbl", "xcl", "xdl", "xfl", "xgl", "xkl", "xpl", "xsl", "xtl", "xvl", "xzl",
-        "xg", "xj", "xq", "xw", "xx", "xz",
-        "aaa", "eee", "iii", "ooo", "uuu", "aae", "aai", "aao", "aau", "aea", "aei", "aeo", "aeu",
-        "aia", "aie", "aio", "aiu", "aoa", "aoe", "aoi", "aou", "aua", "aue", "aui", "auo",
-        "eaa", "eae", "eai", "eao", "eau", "eea", "eei", "eeo", "eeu", "eia", "eie", "eio", "eiu",
-        "eoa", "eoe", "eoi", "eou", "eua", "eue", "eui", "euo", "iaa", "iae", "iai", "iao", "iau",
-        "iea", "iee", "ieo", "ieu", "iia", "iie", "iio", "iiu", "ioa", "ioe", "ioi", "iou",
-        "iua", "iue", "iui", "iuo", "oaa", "oae", "oai", "oao", "oau", "oea", "oee", "oei", "oeo",
-        "oeu", "oia", "oie", "oii", "oio", "oiu", "ooa", "ooe", "ooi", "oou", "oua", "oue", "oui", "ouo",
-        "uaa", "uae", "uai", "uao", "uau", "uea", "uee", "uei", "ueo", "ueu", "uia", "uie", "uii",
-        "uio", "uiu", "uoa", "uoe", "uoi", "uoo", "uou", "uua", "uue", "uui", "uuo"]
-}
 
 # --- Utility Functions ---
 def is_vowel(char: str) -> bool:
@@ -186,34 +141,6 @@ def is_vowel(char: str) -> bool:
 
 def get_vowel_consonant_pattern(text: str) -> str:
     return ''.join('V' if is_vowel(char) else 'C' for char in text.lower())
-
-def score_length_preference(block_text: str, name_length_pref: Optional[float] = None) -> float:
-    """Score based on block length and name_length preference (0.0-1.0)."""
-    if name_length_pref is None:
-        return 50.0  # Neutral score if no preference
-    
-    block_length = len(block_text)
-    
-    # More aggressive scoring based on length preference
-    # Use exponential scaling to make the preference more pronounced
-    if block_length <= 3:
-        # Short blocks: high score when name_length is low
-        # Use quadratic function for more pronounced effect
-        score = 100.0 * ((1.0 - name_length_pref) ** 2)
-    elif block_length == 4:
-        # Medium blocks: neutral with slight bias
-        if name_length_pref < 0.5:
-            score = 60.0  # Slightly favor when preferring shorter
-        else:
-            score = 40.0  # Slightly disfavor when preferring longer
-    elif block_length <= 6:
-        # Long blocks: high score when name_length is high
-        score = 100.0 * (name_length_pref ** 2)
-    else:
-        # Very long blocks: extremely high score when preferring long names
-        score = 100.0 * (name_length_pref ** 1.5)
-    
-    return max(0.0, min(100.0, score))
 
 # --- Scoring Functions ---
 def score_vibe_match(block_vibes: Dict, target_vibes: Dict) -> float:
@@ -525,8 +452,7 @@ class PatternBlocks:
                                    blocks_used: List[str],
                                    target_vibes: Dict,
                                    vowel_first_pref: Optional[Union[bool, float]],
-                                   scoring_config: ScoringConfig,
-                                   name_length_pref: Optional[float] = None
+                                   scoring_config: ScoringConfig
                                    ) -> str:
         """ Internal helper using scoring config. """
         err_prefix = f"Err{block_type.capitalize()}";
@@ -572,16 +498,7 @@ class PatternBlocks:
                     # Pass scoring_config to score_compatibility
                     compatibility_score = 100.0 if not last_block else score_compatibility(last_block, block_text, blocks_used, scoring_config)
                     # Use weights from scoring_config
-                    base_score = (scoring_config.weight_vibe * vibe_score) + (scoring_config.weight_compatibility * compatibility_score)
-                    
-                    # Apply length preference as a modifier
-                    if name_length_pref is not None:
-                        length_score = score_length_preference(block_text, name_length_pref)
-                        # Use length score as a more aggressive multiplier (0.1-2.0 range)
-                        length_modifier = 0.1 + (length_score / 100.0 * 1.9)
-                        total_score = base_score * length_modifier
-                    else:
-                        total_score = base_score
+                    total_score = (scoring_config.weight_vibe * vibe_score) + (scoring_config.weight_compatibility * compatibility_score)
                     
                     if isinstance(total_score, (int, float)): candidate_scores.append((float(total_score), block_text))
                 except Exception as score_err: print(f"ERROR scoring block '{block_text}': {score_err}. Skipping."); continue
@@ -612,26 +529,26 @@ class PatternBlocks:
     def get_compatible_prefix(self, blocks_used: List[str], scoring_config: Optional[ScoringConfig] = None, **kwargs) -> str:
         config = scoring_config or ScoringConfig() # Use default if None provided
         vowel_first_pref = kwargs.pop('vowel_first', None)
-        name_length_pref = kwargs.pop('name_length', None)
-        return self._get_scored_block_internal('prefix', self.prefixes, blocks_used, kwargs, vowel_first_pref, config, name_length_pref)
+        kwargs.pop('name_length', None)  # Remove if present but ignore
+        return self._get_scored_block_internal('prefix', self.prefixes, blocks_used, kwargs, vowel_first_pref, config)
 
     def get_compatible_bridge(self, blocks_used: List[str], scoring_config: Optional[ScoringConfig] = None, **kwargs) -> str:
         config = scoring_config or ScoringConfig()
         if not blocks_used: return "ErrBridgeConfig"
-        name_length_pref = kwargs.pop('name_length', None)
-        return self._get_scored_block_internal('bridge', self.bridges, blocks_used, kwargs, None, config, name_length_pref)
+        kwargs.pop('name_length', None)  # Remove if present but ignore
+        return self._get_scored_block_internal('bridge', self.bridges, blocks_used, kwargs, None, config)
 
     def get_compatible_middle(self, blocks_used: List[str], scoring_config: Optional[ScoringConfig] = None, **kwargs) -> str:
         config = scoring_config or ScoringConfig()
         if not blocks_used: return "ErrMiddleConfig"
-        name_length_pref = kwargs.pop('name_length', None)
-        return self._get_scored_block_internal('middle', self.middles, blocks_used, kwargs, None, config, name_length_pref)
+        kwargs.pop('name_length', None)  # Remove if present but ignore
+        return self._get_scored_block_internal('middle', self.middles, blocks_used, kwargs, None, config)
 
     def get_compatible_suffix(self, blocks_used: List[str], scoring_config: Optional[ScoringConfig] = None, **kwargs) -> str:
         config = scoring_config or ScoringConfig()
         if not blocks_used: return "ErrSuffixConfig"
-        name_length_pref = kwargs.pop('name_length', None)
-        return self._get_scored_block_internal('suffix', self.suffixes, blocks_used, kwargs, None, config, name_length_pref)
+        kwargs.pop('name_length', None)  # Remove if present but ignore
+        return self._get_scored_block_internal('suffix', self.suffixes, blocks_used, kwargs, None, config)
 
 
 # --- Global instance and convenience functions ---

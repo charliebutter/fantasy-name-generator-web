@@ -60,9 +60,6 @@ class FantasyNameConfig:
         self.allow_diacritics: bool = True
         self.allow_ligatures: bool = True
 
-        # Name Length Preference
-        self.name_length: float = 0.5
-
         # Scoring Config
         self.scoring_config: ScoringConfig = ScoringConfig()
 
@@ -157,10 +154,6 @@ class FantasyNameConfig:
         self.allow_diacritics = diacritics;
         self.allow_ligatures = ligatures;
         return self
-
-    def set_name_length(self, name_length: float) -> 'FantasyNameConfig':
-        if 0.0 <= name_length <= 1.0: self.name_length = name_length; return self
-        raise ValueError("Name length must be between 0.0 and 1.0")
 
     def set_scoring_config(self, config: ScoringConfig) -> 'FantasyNameConfig':
         """Sets a custom scoring configuration."""
@@ -292,10 +285,6 @@ def generate_fantasy_name(config: Optional[FantasyNameConfig] = None) -> str:
 
         # Add theme to target_vibes
         target_vibes['theme'] = config.theme
-
-        # Add name_length preference to target_vibes
-        if hasattr(config, 'name_length') and config.name_length is not None:
-            target_vibes['name_length'] = config.name_length
 
         # Prefix args include vowel preference
         prefix_target_vibes = target_vibes.copy()
