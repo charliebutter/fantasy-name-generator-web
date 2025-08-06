@@ -205,7 +205,7 @@
                         </div>
 
                         <div class="checkbox-container">
-                            <label class="checkbox-group-label">Name Length Options</label>
+                            <label class="checkbox-group-label">Block Count Weights</label>
                             <div class="checkbox-group">
                                 <div class="checkbox-item">
                                     <div class="checkbox-weight-row">
@@ -230,6 +230,18 @@
                                             <input type="number" id="block_count_3_weight" name="block_count_3_weight" min="1" max="10" value="1" class="weight-input number-input block-count-weight">
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="integrated-slider">
+                            <div class="integrated-slider-row">
+                                <div class="integrated-slider-label" title="Controls the overall length preference of generated names">Name Length Weight</div>
+                                <div class="slider-input-row">
+                                    <div class="integrated-slider-input">
+                                        <input type="range" id="name_length" name="name_length" min="0" max="1" step="0.1" value="0.5" class="value-slider">
+                                    </div>
+                                    <div class="integrated-slider-value slider-value-display" id="name_length_val">5</div>
                                 </div>
                             </div>
                         </div>
