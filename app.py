@@ -187,14 +187,14 @@ def parse_form_data(form_data: ImmutableMultiDict):
             # No need to log if neither min nor max was present in the form
 
         # --- Structure ---
-        # Block Counts (List from Checkboxes, values 2, 3, or 4)
+        # Block Counts (List from Checkboxes, values 2 or 3)
         raw_block_counts = form_data.getlist('block_counts') # Use getlist for multiple checkboxes
         log.debug(f"Raw block_counts: {raw_block_counts}")
         if raw_block_counts:
             # Parse strings to integers safely
             parsed_counts = [c for c in (safe_int(s) for s in raw_block_counts) if c is not None]
-            # Filter for valid counts (2-4)
-            valid_counts = [c for c in parsed_counts if 2 <= c <= 4]
+            # Filter for valid counts (2-3)
+            valid_counts = [c for c in parsed_counts if 2 <= c <= 3]
             
             if valid_counts:
                 try:
@@ -223,7 +223,7 @@ def parse_form_data(form_data: ImmutableMultiDict):
                     config.force_block_counts = None # Fallback to generator's default
             else:
                 # Log if parsing resulted in no valid counts
-                log.warning(f"No valid block counts (2-4) found in {parsed_counts}. Using generator default.")
+                log.warning(f"No valid block counts (2-3) found in {parsed_counts}. Using generator default.")
                 config.force_block_counts = None
         else:
             # Log if no checkboxes were selected
