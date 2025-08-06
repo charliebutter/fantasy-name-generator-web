@@ -249,17 +249,6 @@ def parse_form_data(form_data: ImmutableMultiDict):
             log.info("No vowel_first_prefix submitted or invalid format. Using generator default (None).")
             config.vowel_first_prefix = None
 
-        # Name Length Preference (Float 0.0-1.0 from Slider)
-        # NOTE: Form parsing kept for future implementation, but functionality is currently disabled
-        raw_name_length = form_data.get('name_length')
-        log.debug(f"Raw name_length: '{raw_name_length}' (parsed but not used)")
-        name_length_pref = safe_float(raw_name_length) # Parse as float
-        if name_length_pref is not None:
-            clamped_length = max(0.0, min(1.0, name_length_pref))
-            log.info(f"Name length preference parsed: {clamped_length} (not implemented)")
-        else:
-            log.info("No name_length submitted or invalid format (not implemented).")
-
         # --- Special Features ---
         raw_sp_prob = form_data.get('special_features')
         # Use safe_float with a default if parsing fails or value is missing

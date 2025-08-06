@@ -529,25 +529,21 @@ class PatternBlocks:
     def get_compatible_prefix(self, blocks_used: List[str], scoring_config: Optional[ScoringConfig] = None, **kwargs) -> str:
         config = scoring_config or ScoringConfig() # Use default if None provided
         vowel_first_pref = kwargs.pop('vowel_first', None)
-        kwargs.pop('name_length', None)  # Remove if present but ignore
         return self._get_scored_block_internal('prefix', self.prefixes, blocks_used, kwargs, vowel_first_pref, config)
 
     def get_compatible_bridge(self, blocks_used: List[str], scoring_config: Optional[ScoringConfig] = None, **kwargs) -> str:
         config = scoring_config or ScoringConfig()
         if not blocks_used: return "ErrBridgeConfig"
-        kwargs.pop('name_length', None)  # Remove if present but ignore
         return self._get_scored_block_internal('bridge', self.bridges, blocks_used, kwargs, None, config)
 
     def get_compatible_middle(self, blocks_used: List[str], scoring_config: Optional[ScoringConfig] = None, **kwargs) -> str:
         config = scoring_config or ScoringConfig()
         if not blocks_used: return "ErrMiddleConfig"
-        kwargs.pop('name_length', None)  # Remove if present but ignore
         return self._get_scored_block_internal('middle', self.middles, blocks_used, kwargs, None, config)
 
     def get_compatible_suffix(self, blocks_used: List[str], scoring_config: Optional[ScoringConfig] = None, **kwargs) -> str:
         config = scoring_config or ScoringConfig()
         if not blocks_used: return "ErrSuffixConfig"
-        kwargs.pop('name_length', None)  # Remove if present but ignore
         return self._get_scored_block_internal('suffix', self.suffixes, blocks_used, kwargs, None, config)
 
 
