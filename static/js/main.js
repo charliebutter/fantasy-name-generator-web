@@ -266,7 +266,8 @@ function serializeFormSettings() {
         rep_mult: { tlc: 0.7, sc: 0.2 }, // Standard defaults
         bound_pen: { c3: 35, c4: 60, v3: 50 }, // Adjusted defaults from python
         join_pen: { hs: 20, av: 50, cs: 25 }, // Adjusted defaults from python
-        bonus_smooth: 15 // Adjusted default from python
+        bonus_smooth: 15, // Adjusted default from python
+        letter_pair_pen: 40 // Default from HTML form
     };
 
     // --- Helper to get form value ---
@@ -394,6 +395,8 @@ function serializeFormSettings() {
     const bonusSmooth = floatVal('bonus_smooth_transition');
     if (bonusSmooth !== null && bonusSmooth !== DEFAULTS.bonus_smooth) scoring.bs = bonusSmooth;
 
+    const letterPairPen = floatVal('letter_pair_penalty_factor');
+    if (letterPairPen !== null && letterPairPen !== DEFAULTS.letter_pair_pen) scoring.lpp = letterPairPen;
 
     if (Object.keys(scoring).length > 0) settings.sc = scoring;
 
@@ -559,6 +562,7 @@ function deserializeAndApplySettings(encodedSettings) {
                 }
             }
              if (sc.bs !== undefined) updateSlider('bonus_smooth_transition', sc.bs);
+             if (sc.lpp !== undefined) updateSlider('letter_pair_penalty_factor', sc.lpp);
         }
 
         console.log('Settings applied successfully from code.');
