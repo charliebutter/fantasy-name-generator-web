@@ -16,10 +16,13 @@ from fantasynamegen.patterns import ScoringConfig
 def create_default_config() -> FantasyNameConfig:
     """
     Default configuration: Balanced settings for general-purpose fantasy names.
-    Uses class constructor defaults - no explicit overrides needed.
+    Explicitly sets all default values for both FantasyNameConfig and ScoringConfig.
     """
     config = FantasyNameConfig()
     scoring = ScoringConfig()
+
+    # --- FantasyNameConfig Settings ---
+    config.set_theme('default')
 
     # Structure
     config.set_force_block_count([2, 2, 3])
@@ -35,15 +38,48 @@ def create_default_config() -> FantasyNameConfig:
     # Special Features
     config.set_special_features(0.2)
     config.set_max_special_features(1)
-    config.set_allowed_features(True, False, False)
+    config.set_allowed_features(apostrophes=True, hyphens=False, spaces=False)
 
     # Character Modifications
     config.set_character_modifications(0.2)
     config.set_max_modifications(1)
-    config.set_allowed_modifications(True, True)
+    config.set_allowed_modifications(diacritics=True, ligatures=True)
 
-    # --- FantasyNameConfig Settings ---
-    config.set_theme('default') # Base theme
+    # --- ScoringConfig Settings ---
+    # Core scoring weights
+    scoring.set_weights(vibe=0.5, compatibility=0.5)
+    
+    # Selection parameters
+    scoring.set_top_n_candidates(40)
+    scoring.set_low_score_threshold(50.0)
+    
+    # Repetition penalties
+    scoring.set_repetition_penalties(
+        direct_block=75.0,
+        sequence=65.0,
+        syllable=80.0,
+        vowel_across_boundary=20.0,
+        triple_letter=85.0
+    )
+    scoring.set_repetition_multipliers(syllable_common=0.2)
+    
+    # Boundary cluster penalties
+    scoring.set_boundary_penalties(
+        consonants_3=50.0,
+        consonants_4plus=80.0,
+        vowels_3plus=50.0
+    )
+    
+    # Phonetic flow penalties
+    scoring.set_join_penalties(
+        hard_stop_join=20.0,
+        awkward_vowel_join=50.0,
+        cluster_hard_stop=50.0
+    )
+    
+    # Bonus systems
+    scoring.set_bonus_smooth_transition(15.0)
+    scoring.set_letter_pair_penalty_factor(40.0)
 
     # --- Attach Scoring and Return ---
     config.set_scoring_config(scoring)
@@ -53,32 +89,69 @@ def create_default_config() -> FantasyNameConfig:
 def create_elf_config() -> FantasyNameConfig:
     """
     Config for elegant, melodic Elves. Uses 'elf' theme blocks.
+    Optimized for graceful, mystical elven names with flowing phonetics.
     """
     config = FantasyNameConfig()
     scoring = ScoringConfig()
 
-    # --- FantasyNameConfig Settings ---
-    config.set_force_block_count([2, 3])
-    config.set_vowel_first_prefix(0.5)
+    config.set_theme('elf')
+
+    # Structure
+    config.set_force_block_count([2, 2, 3])
+    config.set_vowel_first_prefix(0.3)
 
     # Vibe Sliders
-    config.set_fem_masc(2, 9)
-    config.set_good_evil(2, 7)
-    config.set_common_exotic(5, 8)
-    config.set_elegant_rough(2, 6)
-    config.set_weak_powerful(4, 8)
+    config.set_fem_masc(1, 10)
+    config.set_good_evil(1, 10)
+    config.set_common_exotic(1, 10)
+    config.set_elegant_rough(1, 10)
+    config.set_weak_powerful(1, 10)
 
     # Special Features
-    config.set_special_features(0.3)
+    config.set_special_features(0.2)
     config.set_max_special_features(1)
-    config.set_allowed_features(True, False, False)
+    config.set_allowed_features(apostrophes=True, hyphens=False, spaces=False)
 
     # Character Modifications
     config.set_character_modifications(0.2)
-    config.set_max_modifications(2)
-    config.set_allowed_modifications(True, False)
+    config.set_max_modifications(1)
+    config.set_allowed_modifications(diacritics=True, ligatures=True)
 
-    config.set_theme('elf')
+    # --- ScoringConfig Settings ---
+    # Core scoring weights
+    scoring.set_weights(vibe=0.5, compatibility=0.5)
+
+    # Selection parameters
+    scoring.set_top_n_candidates(40)
+    scoring.set_low_score_threshold(50.0)
+
+    # Repetition penalties
+    scoring.set_repetition_penalties(
+        direct_block=75.0,
+        sequence=65.0,
+        syllable=80.0,
+        vowel_across_boundary=20.0,
+        triple_letter=85.0
+    )
+    scoring.set_repetition_multipliers(syllable_common=0.2)
+
+    # Boundary cluster penalties
+    scoring.set_boundary_penalties(
+        consonants_3=50.0,
+        consonants_4plus=80.0,
+        vowels_3plus=50.0
+    )
+
+    # Phonetic flow penalties
+    scoring.set_join_penalties(
+        hard_stop_join=20.0,
+        awkward_vowel_join=50.0,
+        cluster_hard_stop=50.0
+    )
+
+    # Bonus systems
+    scoring.set_bonus_smooth_transition(15.0)
+    scoring.set_letter_pair_penalty_factor(40.0)
 
     # --- Attach Scoring and Return ---
     config.set_scoring_config(scoring)
@@ -92,28 +165,64 @@ def create_fae_config() -> FantasyNameConfig:
     config = FantasyNameConfig()
     scoring = ScoringConfig()
 
-    # --- FantasyNameConfig Settings ---
-    config.set_force_block_count([2])
-    config.set_vowel_first_prefix(0.6)
+    config.set_theme('fae')
+
+    # Structure
+    config.set_force_block_count([2, 2, 3])
+    config.set_vowel_first_prefix(0.3)
 
     # Vibe Sliders
-    config.set_fem_masc(2, 7)
-    config.set_good_evil(1, 6)
-    config.set_common_exotic(4, 10)
-    config.set_elegant_rough(1, 4)
-    config.set_weak_powerful(1, 5)
+    config.set_fem_masc(1, 10)
+    config.set_good_evil(1, 10)
+    config.set_common_exotic(1, 10)
+    config.set_elegant_rough(1, 10)
+    config.set_weak_powerful(1, 10)
 
     # Special Features
-    config.set_special_features(0.5)
+    config.set_special_features(0.2)
     config.set_max_special_features(1)
-    config.set_allowed_features(True, False, False)
+    config.set_allowed_features(apostrophes=True, hyphens=False, spaces=False)
 
     # Character Modifications
-    config.set_character_modifications(0.4)
-    config.set_max_modifications(2)
-    config.set_allowed_modifications(True, True)
+    config.set_character_modifications(0.2)
+    config.set_max_modifications(1)
+    config.set_allowed_modifications(diacritics=True, ligatures=True)
 
-    config.set_theme('fae')
+    # --- ScoringConfig Settings ---
+    # Core scoring weights
+    scoring.set_weights(vibe=0.5, compatibility=0.5)
+
+    # Selection parameters
+    scoring.set_top_n_candidates(40)
+    scoring.set_low_score_threshold(50.0)
+
+    # Repetition penalties
+    scoring.set_repetition_penalties(
+        direct_block=75.0,
+        sequence=65.0,
+        syllable=80.0,
+        vowel_across_boundary=20.0,
+        triple_letter=85.0
+    )
+    scoring.set_repetition_multipliers(syllable_common=0.2)
+
+    # Boundary cluster penalties
+    scoring.set_boundary_penalties(
+        consonants_3=50.0,
+        consonants_4plus=80.0,
+        vowels_3plus=50.0
+    )
+
+    # Phonetic flow penalties
+    scoring.set_join_penalties(
+        hard_stop_join=20.0,
+        awkward_vowel_join=50.0,
+        cluster_hard_stop=50.0
+    )
+
+    # Bonus systems
+    scoring.set_bonus_smooth_transition(15.0)
+    scoring.set_letter_pair_penalty_factor(40.0)
 
     # --- Attach Scoring and Return ---
     config.set_scoring_config(scoring)
@@ -127,27 +236,6 @@ def create_desert_nomad_config() -> FantasyNameConfig:
     """
     config = FantasyNameConfig()
     scoring = ScoringConfig()
-
-    # --- FantasyNameConfig Settings ---
-    config.set_force_block_count([2, 3, 3])
-    config.set_vowel_first_prefix(0.4)
-
-    # Vibe Sliders
-    config.set_fem_masc(3, 7)
-    config.set_good_evil(3, 8)
-    config.set_common_exotic(5, 9)
-    config.set_elegant_rough(5, 8)
-    config.set_weak_powerful(5, 9)
-
-    # Special Features
-    config.set_special_features(0.3)
-    config.set_max_special_features(1)
-    config.set_allowed_features(True, False, False)
-
-    # Character Modifications
-    config.set_character_modifications(0.2)
-    config.set_max_modifications(1)
-    config.set_allowed_modifications(True, False)
 
     config.set_theme('desert')
 
@@ -164,28 +252,64 @@ def create_druid_config() -> FantasyNameConfig:
     config = FantasyNameConfig()
     scoring = ScoringConfig()
 
-    # --- FantasyNameConfig Settings ---
-    config.set_force_block_count([2])
-    config.set_vowel_first_prefix(0.4)
+    config.set_theme('druid')
+
+    # Structure
+    config.set_force_block_count([2, 2, 3])
+    config.set_vowel_first_prefix(0.3)
 
     # Vibe Sliders
-    config.set_fem_masc(3, 7)
-    config.set_good_evil(2, 7)
-    config.set_common_exotic(2, 8)
-    config.set_elegant_rough(3, 6)
-    config.set_weak_powerful(2, 6)
+    config.set_fem_masc(1, 10)
+    config.set_good_evil(1, 10)
+    config.set_common_exotic(1, 10)
+    config.set_elegant_rough(1, 10)
+    config.set_weak_powerful(1, 10)
 
     # Special Features
-    config.set_special_features(0.3)
+    config.set_special_features(0.2)
     config.set_max_special_features(1)
-    config.set_allowed_features(True, False, False)
+    config.set_allowed_features(apostrophes=True, hyphens=False, spaces=False)
 
     # Character Modifications
     config.set_character_modifications(0.2)
     config.set_max_modifications(1)
-    config.set_allowed_modifications(True, False)
+    config.set_allowed_modifications(diacritics=True, ligatures=True)
 
-    config.set_theme('druid')
+    # --- ScoringConfig Settings ---
+    # Core scoring weights
+    scoring.set_weights(vibe=0.5, compatibility=0.5)
+
+    # Selection parameters
+    scoring.set_top_n_candidates(40)
+    scoring.set_low_score_threshold(50.0)
+
+    # Repetition penalties
+    scoring.set_repetition_penalties(
+        direct_block=75.0,
+        sequence=65.0,
+        syllable=80.0,
+        vowel_across_boundary=20.0,
+        triple_letter=85.0
+    )
+    scoring.set_repetition_multipliers(syllable_common=0.2)
+
+    # Boundary cluster penalties
+    scoring.set_boundary_penalties(
+        consonants_3=50.0,
+        consonants_4plus=80.0,
+        vowels_3plus=50.0
+    )
+
+    # Phonetic flow penalties
+    scoring.set_join_penalties(
+        hard_stop_join=20.0,
+        awkward_vowel_join=50.0,
+        cluster_hard_stop=50.0
+    )
+
+    # Bonus systems
+    scoring.set_bonus_smooth_transition(15.0)
+    scoring.set_letter_pair_penalty_factor(40.0)
 
     # --- Attach Scoring and Return ---
     config.set_scoring_config(scoring)
@@ -199,28 +323,64 @@ def create_orc_config() -> FantasyNameConfig:
     config = FantasyNameConfig()
     scoring = ScoringConfig()
 
-    # --- FantasyNameConfig Settings ---
+    config.set_theme('orc')
+
+    # Structure
     config.set_force_block_count([2, 2, 3])
-    config.set_vowel_first_prefix(0.2)
+    config.set_vowel_first_prefix(0.3)
 
     # Vibe Sliders
-    config.set_fem_masc(4, 8)
-    config.set_good_evil(6, 10)
-    config.set_common_exotic(3, 7)
-    config.set_elegant_rough(6, 10)
-    config.set_weak_powerful(7, 10)
+    config.set_fem_masc(1, 10)
+    config.set_good_evil(1, 10)
+    config.set_common_exotic(1, 10)
+    config.set_elegant_rough(1, 10)
+    config.set_weak_powerful(1, 10)
 
     # Special Features
-    config.set_special_features(0.1)
+    config.set_special_features(0.2)
     config.set_max_special_features(1)
-    config.set_allowed_features(True, False, False)
+    config.set_allowed_features(apostrophes=True, hyphens=False, spaces=False)
 
     # Character Modifications
-    config.set_character_modifications(0.05)
+    config.set_character_modifications(0.2)
     config.set_max_modifications(1)
-    config.set_allowed_modifications(False, False)
+    config.set_allowed_modifications(diacritics=True, ligatures=True)
 
-    config.set_theme('orc')
+    # --- ScoringConfig Settings ---
+    # Core scoring weights
+    scoring.set_weights(vibe=0.5, compatibility=0.5)
+
+    # Selection parameters
+    scoring.set_top_n_candidates(40)
+    scoring.set_low_score_threshold(50.0)
+
+    # Repetition penalties
+    scoring.set_repetition_penalties(
+        direct_block=75.0,
+        sequence=65.0,
+        syllable=80.0,
+        vowel_across_boundary=20.0,
+        triple_letter=85.0
+    )
+    scoring.set_repetition_multipliers(syllable_common=0.2)
+
+    # Boundary cluster penalties
+    scoring.set_boundary_penalties(
+        consonants_3=50.0,
+        consonants_4plus=80.0,
+        vowels_3plus=50.0
+    )
+
+    # Phonetic flow penalties
+    scoring.set_join_penalties(
+        hard_stop_join=20.0,
+        awkward_vowel_join=50.0,
+        cluster_hard_stop=50.0
+    )
+
+    # Bonus systems
+    scoring.set_bonus_smooth_transition(15.0)
+    scoring.set_letter_pair_penalty_factor(40.0)
 
     # --- Attach Scoring and Return ---
     config.set_scoring_config(scoring)
@@ -234,28 +394,64 @@ def create_dwarf_config() -> FantasyNameConfig:
     config = FantasyNameConfig()
     scoring = ScoringConfig()
 
-    # --- FantasyNameConfig Settings ---
-    config.set_force_block_count([2, 3])
+    config.set_theme('dwarf')
+
+    # Structure
+    config.set_force_block_count([2, 2, 3])
     config.set_vowel_first_prefix(0.3)
 
     # Vibe Sliders
-    config.set_fem_masc(4, 8)
-    config.set_good_evil(3, 6)
-    config.set_common_exotic(2, 6)
-    config.set_elegant_rough(4, 8)
-    config.set_weak_powerful(5, 8)
+    config.set_fem_masc(1, 10)
+    config.set_good_evil(1, 10)
+    config.set_common_exotic(1, 10)
+    config.set_elegant_rough(1, 10)
+    config.set_weak_powerful(1, 10)
 
     # Special Features
     config.set_special_features(0.2)
     config.set_max_special_features(1)
-    config.set_allowed_features(True, True, False)
+    config.set_allowed_features(apostrophes=True, hyphens=False, spaces=False)
 
     # Character Modifications
-    config.set_character_modifications(0.1)
+    config.set_character_modifications(0.2)
     config.set_max_modifications(1)
-    config.set_allowed_modifications(True, False)
+    config.set_allowed_modifications(diacritics=True, ligatures=True)
 
-    config.set_theme('dwarf')
+    # --- ScoringConfig Settings ---
+    # Core scoring weights
+    scoring.set_weights(vibe=0.5, compatibility=0.5)
+
+    # Selection parameters
+    scoring.set_top_n_candidates(40)
+    scoring.set_low_score_threshold(50.0)
+
+    # Repetition penalties
+    scoring.set_repetition_penalties(
+        direct_block=75.0,
+        sequence=65.0,
+        syllable=80.0,
+        vowel_across_boundary=20.0,
+        triple_letter=85.0
+    )
+    scoring.set_repetition_multipliers(syllable_common=0.2)
+
+    # Boundary cluster penalties
+    scoring.set_boundary_penalties(
+        consonants_3=50.0,
+        consonants_4plus=80.0,
+        vowels_3plus=50.0
+    )
+
+    # Phonetic flow penalties
+    scoring.set_join_penalties(
+        hard_stop_join=20.0,
+        awkward_vowel_join=50.0,
+        cluster_hard_stop=50.0
+    )
+
+    # Bonus systems
+    scoring.set_bonus_smooth_transition(15.0)
+    scoring.set_letter_pair_penalty_factor(40.0)
 
     # --- Attach Scoring and Return ---
     config.set_scoring_config(scoring)

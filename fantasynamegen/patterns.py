@@ -25,12 +25,12 @@ class ScoringConfig:
         # Scoring weights: determine the balance between vibe matching vs phonetic compatibility
         # These must sum to 1.0. Higher vibe weight = prioritize thematic matching
         # Higher compatibility weight = prioritize smooth-sounding combinations
-        self.weight_vibe: float = 0.4
-        self.weight_compatibility: float = 0.6
+        self.weight_vibe: float = 0.5
+        self.weight_compatibility: float = 0.5
         
         # Selection parameters: control how blocks are chosen from scored candidates
-        self.top_n_candidates: int = 30      # Select randomly from this many top-scoring blocks
-        self.low_score_threshold: float = 60.0  # If best score < this, warn but still select best
+        self.top_n_candidates: int = 40      # Select randomly from this many top-scoring blocks
+        self.low_score_threshold: float = 50.0  # If best score < this, warn but still select best
         
         # Repetition penalties: prevent awkward repeated sounds/patterns
         self.penalty_repetition_direct_block: float = 75.0      # Same block used twice in a row
@@ -52,7 +52,7 @@ class ScoringConfig:
         
         # Bonus and additional penalty systems
         self.bonus_smooth_transition: float = 15.0              # Bonus for liquid/nasal + vowel transitions (l-a, n-e, etc.)
-        self.penalty_letter_pairs_factor: float = 15.0          # Multiplier for letter pair penalties from CSV file
+        self.penalty_letter_pairs_factor: float = 40.0          # Multiplier for letter pair penalties from CSV file
 
     def set_weights(self, vibe: float, compatibility: float) -> 'ScoringConfig':
         if vibe + compatibility == 1.0 and vibe >= 0 and compatibility >= 0:
@@ -673,10 +673,14 @@ class PatternBlocks:
 
             # STEP 3: RANKING AND SELECTION
             # Sort candidates by score (highest first)
-            
+
             candidate_scores.sort(key=lambda x: x[0], reverse=True)
             best_score = candidate_scores[0][0]
             best_block_text = candidate_scores[0][1]
+
+            # Shuffle prefixes for complete randomness
+            if block_type == 'prefix':
+                random.shuffle(candidate_scores)
 
             # Handle low-scoring situations: warn but proceed with best available
             if best_score < scoring_config.low_score_threshold:
@@ -691,13 +695,13 @@ class PatternBlocks:
                     return best_block_text, chosen_score_data
                 return best_block_text
 
-            # Introduce randomness: shuffle candidates before taking top N
-            # This prevents the system from always picking the exact same blocks
-            random.shuffle(candidate_scores)
-
             # Select from top N candidates (adds variety while maintaining quality)
             pool_size = min(scoring_config.top_n_candidates, len(candidate_scores))
             top_candidates = [block for score, block in candidate_scores[:pool_size]]
+
+            # Introduce randomness: shuffle candidates before selecting
+            # This prevents the system from always picking the exact same blocks
+            random.shuffle(top_candidates)
 
             if not top_candidates: 
                 print(f"CRITICAL Warning: Top pool empty for {block_type}. Returning best overall.")

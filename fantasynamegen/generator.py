@@ -73,9 +73,9 @@ class FantasyNameConfig:
         # === POST-PROCESSING EFFECTS ===
         
         # Special Features: Adds apostrophes, hyphens, spaces for fantasy feel
-        self.special_features: float = 0.15            # Probability of adding features
+        self.special_features: float = 0.2            # Probability of adding features
         self.max_special_features: int = 1             # Maximum number to add
-        self.allow_apostrophes: bool = True            # Enable apostrophes (Kael'thas)
+        self.allow_apostrophes: bool = False            # Enable apostrophes (Kael'thas)
         self.allow_hyphens: bool = False               # Enable hyphens (Ash-kalar)
         self.allow_spaces: bool = False                # Enable spaces (Von Doom)
 

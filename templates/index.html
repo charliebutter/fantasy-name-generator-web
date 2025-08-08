@@ -270,7 +270,7 @@
                             <label class="checkbox-group-label">Allowed Special Features</label>
                             <div class="checkbox-group">
                                 <div class="checkbox-item">
-                                    <input type="checkbox" id="allow_apostrophes" name="allow_apostrophes" checked>
+                                    <input type="checkbox" id="allow_apostrophes" name="allow_apostrophes">
                                     <label for="allow_apostrophes">Apostrophes (')</label>
                                 </div>
                                 <div class="checkbox-item">
@@ -349,45 +349,45 @@
                             <div class="integrated-slider-row">
                                 <div class="integrated-slider-label" title="How much to prioritize matching the 'Vibe' sliders (0.0 to 1.0)">Vibe Weight</div>
                                 <div class="integrated-slider-input">
-                                    <input type="range" id="weight_vibe" name="weight_vibe" min="0" max="1" step="0.1" value="0.4" class="value-slider"> <!-- name added -->
+                                    <input type="range" id="weight_vibe" name="weight_vibe" min="0" max="1" step="0.1" value="0.5" class="value-slider"> <!-- name added -->
                                 </div>
-                                <div class="integrated-slider-value slider-value-display" id="weight_vibe_val">0.4</div>
+                                <div class="integrated-slider-value slider-value-display" id="weight_vibe_val">0.5</div>
                             </div>
                         </div>
                         <div class="integrated-slider">
                             <div class="integrated-slider-row">
                                 <div class="integrated-slider-label" title="How much to prioritize good pronunciation and flow (0.0 to 1.0)">Compatibility Weight</div>
                                 <div class="integrated-slider-input">
-                                    <input type="range" id="weight_compatibility" name="weight_compatibility" min="0" max="1" step="0.1" value="0.6" class="value-slider"> <!-- name added -->
+                                    <input type="range" id="weight_compatibility" name="weight_compatibility" min="0" max="1" step="0.1" value="0.5" class="value-slider"> <!-- name added -->
                                 </div>
-                                <div class="integrated-slider-value slider-value-display" id="weight_compatibility_val">0.6</div>
+                                <div class="integrated-slider-value slider-value-display" id="weight_compatibility_val">0.5</div>
                             </div>
                         </div>
                         <div class="integrated-slider">
                             <div class="integrated-slider-row">
                                 <div class="integrated-slider-label" title="Number of top candidates considered for final selection">Candidates Considered</div>
                                 <div class="integrated-slider-input">
-                                    <input type="range" id="top_n_candidates" name="top_n_candidates" min="1" max="50" step="1" value="30" class="value-slider"> <!-- name added -->
+                                    <input type="range" id="top_n_candidates" name="top_n_candidates" min="1" max="100" step="1" value="40" class="value-slider"> <!-- name added -->
                                 </div>
-                                <div class="integrated-slider-value slider-value-display" id="top_n_candidates_val">30</div>
+                                <div class="integrated-slider-value slider-value-display" id="top_n_candidates_val">40</div>
                             </div>
                         </div>
                         <div class="integrated-slider">
                             <div class="integrated-slider-row">
                                 <div class="integrated-slider-label" title="Minimum score required; below this, selection is less random">Low Score Threshold</div>
                                 <div class="integrated-slider-input">
-                                    <input type="range" id="low_score_threshold" name="low_score_threshold" min="0" max="100" step="1" value="60" class="value-slider"> <!-- name added -->
+                                    <input type="range" id="low_score_threshold" name="low_score_threshold" min="0" max="100" step="1" value="50" class="value-slider"> <!-- name added -->
                                 </div>
-                                <div class="integrated-slider-value slider-value-display" id="low_score_threshold_val">60</div>
+                                <div class="integrated-slider-value slider-value-display" id="low_score_threshold_val">50</div>
                             </div>
                         </div>
                         <div class="integrated-slider">
                             <div class="integrated-slider-row">
                                 <div class="integrated-slider-label" title="Penalty multiplier for difficult letter combinations (0.0 = no penalty, higher values = stronger penalty)">Letter Pair Penalty Factor</div>
                                 <div class="integrated-slider-input">
-                                    <input type="range" id="letter_pair_penalty_factor" name="letter_pair_penalty_factor" min="0" max="30" step="1.0" value="15.0" class="value-slider"> <!-- name added -->
+                                    <input type="range" id="letter_pair_penalty_factor" name="letter_pair_penalty_factor" min="0" max="100" step="1" value="40" class="value-slider"> <!-- name added -->
                                 </div>
-                                <div class="integrated-slider-value slider-value-display" id="letter_pair_penalty_factor_val">15.0</div>
+                                <div class="integrated-slider-value slider-value-display" id="letter_pair_penalty_factor_val">40</div>
                             </div>
                         </div>
                     </div>
