@@ -1363,7 +1363,16 @@ function setupCopyFunctionality() {
                  return;
             }
             const allNames = Array.from(nameItems)
-                                  .map(item => item.textContent?.trim() || '')
+                                  .map(item => {
+                                      // Get just the name text without the score - exclude the score label span
+                                      const scoreLabel = item.querySelector('.score-label');
+                                      let nameText = item.textContent?.trim() || '';
+                                      if (scoreLabel) {
+                                          // Remove the score text from the end
+                                          nameText = nameText.replace(scoreLabel.textContent.trim(), '').trim();
+                                      }
+                                      return nameText;
+                                  })
                                   .join('\n');
             if (allNames) {
                 navigator.clipboard.writeText(allNames)
