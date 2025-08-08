@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}Blocks - Fantasy Name Generator{% endblock %}
+
+{% block extra_head %}
+<style>
+.blocks-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.blocks-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.blocks-header h2 {
+    color: var(--text-color);
+    font-family: var(--header-font);
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.blocks-header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.theme-selector {
+    background: var(--panel-bg);
+    border-radius: var(--panel-border-radius);
+    padding: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.theme-selector label {
+    color: var(--text-color);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.theme-selector select {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--input-border-radius);
+    color: var(--text-color);
+    padding: 10px 15px;
+    font-size: 1rem;
+    min-width: 200px;
+    transition: var(--standard-transition);
+}
+
+.theme-selector select:hover {
+    border-color: var(--border-hover);
+}
+
+.theme-selector select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(78, 111, 255, 0.2);
+}
+
+.blocks-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .blocks-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
+.block-column {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--panel-border-radius);
+    overflow: hidden;
+    transition: var(--standard-transition);
+}
+
+
+.block-column-header {
+    background: none;
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-transform: capitalize;
+    font-family: var(--header-font);
+    border-bottom: 2px solid transparent;
+    position: relative;
+}
+
+/* First column - Prefixes */
+.block-column:nth-child(1) .block-column-header {
+    color: var(--primary-color);
+}
+
+.block-column:nth-child(1) .block-column-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary-color);
+}
+
+/* Second column - Middles */
+.block-column:nth-child(2) .block-column-header {
+    color: var(--secondary-color);
+}
+
+.block-column:nth-child(2) .block-column-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--secondary-color);
+}
+
+/* Third column - Suffixes */
+.block-column:nth-child(3) .block-column-header {
+    color: var(--accent-color);
+}
+
+.block-column:nth-child(3) .block-column-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--accent-color);
+}
+
+.block-list {
+    padding: 15px;
+}
+
+
+.block-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 6px;
+}
+
+.block-item {
+    background: var(--input-bg);
+    color: var(--text-color);
+    padding: 4px 4px;
+    border-radius: var(--standard-border-radius);
+    text-align: center;
+    font-family: monospace;
+    font-size: 0.8rem;
+    border: 1px solid var(--border-color);
+    transition: var(--standard-transition);
+}
+
+.block-count {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.loading {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 20px;
+    font-style: italic;
+}
+
+.error {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    color: #ff6b6b;
+    padding: 15px;
+    border-radius: var(--standard-border-radius);
+    text-align: center;
+    margin: 20px 0;
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px;
+    font-style: italic;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="blocks-container">
+    <div class="blocks-header">
+        <h2>Word Blocks</h2>
+        <p>Explore the building blocks used to create fantasy names for each theme<br>
+        <small style="color: var(--text-muted); font-size: 0.8em"><i>(Block lists were generated using AI tools)</i></small></p>
+    </div>
+
+    <div class="theme-selector">
+        <label for="theme-select">Select Theme:</label>
+        <select id="theme-select">
+            <option value="default">Default</option>
+            <option value="elf">Elf</option>
+            <option value="dwarf">Dwarf</option>
+            <option value="orc">Orc</option>
+            <option value="fae">Fae</option>
+            <option value="druid">Druid</option>
+            <option value="desert">Desert</option>
+        </select>
+    </div>
+
+    <div id="blocks-content">
+        <div class="loading">Loading blocks...</div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+class BlocksViewer {
+    constructor() {
+        this.themeSelect = document.getElementById('theme-select');
+        this.blocksContent = document.getElementById('blocks-content');
+        
+        this.init();
+    }
+    
+    init() {
+        // Load initial theme
+        this.loadTheme('default');
+        
+        // Setup event listeners
+        this.themeSelect.addEventListener('change', (e) => {
+            this.loadTheme(e.target.value);
+        });
+    }
+    
+    async loadTheme(theme) {
+        this.showLoading();
+        
+        try {
+            const response = await fetch(`/api/blocks/${theme}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                this.renderBlocks(data.blocks, theme);
+            } else {
+                this.showError(data.error || 'Failed to load blocks');
+            }
+        } catch (error) {
+            console.error('Error loading blocks:', error);
+            this.showError('Network error occurred while loading blocks');
+        }
+    }
+    
+    showLoading() {
+        this.blocksContent.innerHTML = '<div class="loading">Loading blocks...</div>';
+    }
+    
+    showError(message) {
+        this.blocksContent.innerHTML = `<div class="error">Error: ${message}</div>`;
+    }
+    
+    renderBlocks(blocks, theme) {
+        const blockTypes = ['prefixes', 'middles', 'suffixes'];
+        
+        let html = '<div class="blocks-grid">';
+        
+        blockTypes.forEach(blockType => {
+            const items = blocks[blockType] || [];
+            const displayName = blockType.charAt(0).toUpperCase() + blockType.slice(1);
+            
+            html += `
+                <div class="block-column">
+                    <div class="block-column-header">${displayName}</div>
+                    <div class="block-list">
+                        <div class="block-count">${items.length} blocks</div>
+                        <div class="block-items">
+                            ${this.renderBlockItems(items)}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        
+        this.blocksContent.innerHTML = html;
+    }
+    
+    renderBlockItems(items) {
+        if (items.length === 0) {
+            return '<div class="empty-state">No blocks available</div>';
+        }
+        
+        return items.map(item => 
+            `<div class="block-item" title="${item}">${item}</div>`
+        ).join('');
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new BlocksViewer();
+});
+</script>
+{% endblock %}

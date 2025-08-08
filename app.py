@@ -53,8 +53,7 @@ except ImportError as e:
 # Use getattr for safer access in case a preset function is removed/renamed
 PRESET_FUNCTIONS: Dict[str, Optional[callable]] = {
     'default': getattr(preset_configs, 'create_default_config', None),
-    'high_elf': getattr(preset_configs, 'create_high_elf_config', None),
-    'dark_elf': getattr(preset_configs, 'create_dark_elf_config', None),
+    'elf': getattr(preset_configs, 'create_elf_config', None),
     'fae': getattr(preset_configs, 'create_fae_config', None),
     'desert': getattr(preset_configs, 'create_desert_nomad_config', None),
     'druid': getattr(preset_configs, 'create_druid_config', None),
@@ -107,7 +106,6 @@ def safe_int(value_str: Optional[Any], default: Optional[int] = None) -> Optiona
 # Assumes form input names directly match these keys.
 # Multi-arg setters: Map setter name to dict {argument_name: form_input_name}
 MULTI_ARG_SCORING_SETTERS = {
-    'set_blacklist_penalties': {f'level{i}': f'blacklist_level{i}' for i in range(1, 6)},
     'set_repetition_penalties': {
         'direct_block': 'penalty_repetition_direct_block',
         'sequence': 'penalty_repetition_sequence',
@@ -136,7 +134,8 @@ SINGLE_ARG_SCORING_SETTERS = {
     'set_weights': ['weight_vibe', 'weight_compatibility'], # Special case handled below
     'set_top_n_candidates': 'top_n_candidates',
     'set_low_score_threshold': 'low_score_threshold',
-    'set_bonus_smooth_transition': 'bonus_smooth_transition'
+    'set_bonus_smooth_transition': 'bonus_smooth_transition',
+    'set_letter_pair_penalty_factor': 'letter_pair_penalty_factor'
     # Add more single-arg setters here if needed
 }
 
@@ -487,12 +486,6 @@ def config_to_dict(config) -> Dict[str, Any]:
             scoring_dict['top_n_candidates'] = getattr(sc, 'top_n_candidates', 20)
             scoring_dict['low_score_threshold'] = round(getattr(sc, 'low_score_threshold', 25.0), 1)
 
-            # Blacklist Penalties (from dict {1: val, 2: val...})
-            bp_dict = getattr(sc, 'penalty_blacklist_level', {})
-            scoring_dict['blacklist_penalties'] = {}
-            # Provide defaults matching frontend expectations if missing
-            for level, default_val in [(1, 95.0), (2, 70.0), (3, 45.0), (4, 25.0), (5, 10.0)]:
-                 scoring_dict['blacklist_penalties'][level] = round(bp_dict.get(level, default_val), 1)
 
             # --- Other Penalties & Bonuses ---
             # Create helper to safely get and round scoring attributes
@@ -525,6 +518,9 @@ def config_to_dict(config) -> Dict[str, Any]:
             }
             # Bonuses
             scoring_dict['bonus_smooth_transition'] = get_rounded_score_attr('bonus_smooth_transition', 15.0)
+            
+            # Letter Pair Penalties
+            scoring_dict['letter_pair_penalty_factor'] = get_rounded_score_attr('penalty_letter_pairs_factor', 10.0)
 
             result['scoring_config'] = scoring_dict
             log.debug("Successfully converted scoring config.")
@@ -557,6 +553,89 @@ def about() -> str:
     log.info("Serving route: /about")
     return render_template('about.html')
 
+@app.route('/blocks')
+def blocks() -> str:
+    """Render the blocks page showing word lists for each theme."""
+    log.info("Serving route: /blocks")
+    return render_template('blocks.html')
+
+@app.route('/api/blocks/<theme>')
+def get_blocks_for_theme(theme: str) -> Response:
+    """
+    API endpoint to retrieve block data for a specific theme.
+    Returns JSON with prefixes, middles, and suffixes for the theme.
+    """
+    log.info(f"Received request for blocks data: theme='{theme}'")
+    
+    import csv
+    import os
+    
+    # Validate theme name
+    if not theme or not isinstance(theme, str):
+        log.warning(f"Invalid theme name: {theme}")
+        return jsonify({'success': False, 'error': 'Invalid theme name'})
+    
+    theme = theme.lower().strip()
+    
+    try:
+        base_path = os.path.join('fantasynamegen', 'data')
+        theme_path = os.path.join(base_path, theme)
+        default_path = os.path.join(base_path, 'default')
+        
+        blocks_data = {'prefixes': [], 'middles': [], 'suffixes': []}
+        
+        # Load each block type
+        for block_type in ['prefixes', 'middles', 'suffixes']:
+            filename = f'{block_type}.csv'
+            theme_file = os.path.join(theme_path, filename)
+            default_file = os.path.join(default_path, filename)
+            
+            # Try theme-specific file first, fall back to default
+            file_to_read = theme_file if os.path.exists(theme_file) else default_file
+            
+            if os.path.exists(file_to_read):
+                try:
+                    with open(file_to_read, 'r', encoding='utf-8') as csvfile:
+                        reader = csv.DictReader(csvfile)
+                        for row in reader:
+                            # Get the block text - the CSV column names are singular
+                            # Map plural block_type to singular column name
+                            if block_type == 'prefixes':
+                                column_name = 'prefix'
+                            elif block_type == 'suffixes':
+                                column_name = 'suffix'
+                            elif block_type == 'middles':
+                                column_name = 'middle'
+                            else:
+                                column_name = block_type[:-1]  # fallback
+                                
+                            block_text = row.get(column_name, '')
+                            if block_text:
+                                blocks_data[block_type].append(block_text.lower())
+                    
+                    log.info(f"Loaded {len(blocks_data[block_type])} {block_type} from {file_to_read}")
+                except Exception as e:
+                    log.error(f"Error reading {file_to_read}: {e}")
+            else:
+                log.warning(f"No file found for {block_type} in theme {theme} or default")
+        
+        # Verify we have at least some data
+        total_blocks = sum(len(blocks_data[bt]) for bt in blocks_data)
+        if total_blocks == 0:
+            log.error(f"No block data found for theme {theme}")
+            return jsonify({'success': False, 'error': f'No data found for theme {theme}'})
+        
+        log.info(f"Successfully retrieved blocks for theme {theme}: {total_blocks} total blocks")
+        return jsonify({
+            'success': True, 
+            'theme': theme,
+            'blocks': blocks_data
+        })
+        
+    except Exception as e:
+        log.error(f"Error retrieving blocks for theme {theme}: {e}", exc_info=True)
+        return jsonify({'success': False, 'error': 'Internal server error'})
+
 @app.route('/generate-multiple', methods=['POST'])
 def generate_multiple() -> Response:
     """
@@ -582,10 +661,19 @@ def generate_multiple() -> Response:
         log.info(f"Requested name count: {form_data.get('count')}, using validated count: {count}")
 
         log.info(f"Generating {count} names with parsed config...")
-        names = generate_fantasy_names(count, config)
-        log.info(f"Successfully generated names: {names}")
-
-        return jsonify({'success': True, 'names': names})
+        names_data = generate_fantasy_names(count, config, return_metadata=True)
+        
+        # Format the data for frontend consumption
+        formatted_names = []
+        for name, blocks, metadata in names_data:
+            formatted_names.append({
+                'name': name,
+                'blocks': blocks,
+                'metadata': metadata
+            })
+        
+        log.info(f"Successfully generated names: {[item['name'] for item in formatted_names]}")
+        return jsonify({'success': True, 'names': formatted_names})
 
     except ValueError as e: # Catch specific parsing errors from parse_form_data
         log.error(f"Data parsing error in /generate-multiple: {e}", exc_info=True)
@@ -654,4 +742,5 @@ def get_preset(preset_id: str) -> Response:
 # --- Main Execution ---
 if __name__ == '__main__':
     log.info("Starting Flask development server...")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.environ.get('FLASK_PORT', 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)

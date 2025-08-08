@@ -6,8 +6,7 @@ Contains preset configurations for different fantasy races and archetypes.
 
 from .preset_configs import (
     create_default_config,
-    create_high_elf_config,
-    create_dark_elf_config,
+    create_elf_config,
     create_fae_config,
     create_desert_nomad_config,
     create_druid_config,
@@ -17,8 +16,7 @@ from .preset_configs import (
 
 __all__ = [
     'create_default_config',
-    'create_high_elf_config',
-    'create_dark_elf_config',
+    'create_elf_config',
     'create_fae_config',
     'create_desert_nomad_config',
     'create_druid_config',

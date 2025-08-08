@@ -262,7 +262,6 @@ function serializeFormSettings() {
         char_mod_prob: 0.3, max_mods: 1, allow_diac: true, allow_liga: true, // max_mods default changed to 1 based on python
         // Scoring Defaults
         weight_vibe: 0.4, weight_comp: 0.6, top_n: 15, low_thresh: 30,
-        bl_pen: { 1: 95, 2: 70, 3: 45, 4: 25, 5: 10 }, // Standard defaults
         rep_pen: { db: 75, seq: 55, syl: 60, vab: 20, tl: 45 }, // Adjusted defaults from python
         rep_mult: { tlc: 0.7, sc: 0.2 }, // Standard defaults
         bound_pen: { c3: 35, c4: 60, v3: 50 }, // Adjusted defaults from python
@@ -359,12 +358,6 @@ function serializeFormSettings() {
     if (lt !== null && lt !== DEFAULTS.low_thresh) scoring.lt = lt;
 
     // Penalties/Bonuses (check each against its default)
-    const blPen = {};
-    for(let i=1; i<=5; ++i) {
-        const current = floatVal(`blacklist_level${i}`);
-        if (current !== null && current !== DEFAULTS.bl_pen[i]) blPen[i] = current;
-    }
-    if (Object.keys(blPen).length > 0) scoring.blp = blPen;
 
     const repPen = {};
     const repMap = { db: 'repetition_direct_block', seq: 'repetition_sequence', syl: 'repetition_syllable', vab: 'repetition_vowel_across_boundary', tl: 'repetition_triple_letter'};
@@ -541,11 +534,6 @@ function deserializeAndApplySettings(encodedSettings) {
             if (sc.tn !== undefined) updateSlider('top_n_candidates', sc.tn);
             if (sc.lt !== undefined) updateSlider('low_score_threshold', sc.lt);
 
-            if (sc.blp) { // Blacklist penalties
-                for(let i=1; i<=5; ++i) {
-                    if (sc.blp[i] !== undefined) updateSlider(`blacklist_level${i}`, sc.blp[i]);
-                }
-            }
             if (sc.rpp) { // Repetition penalties
                 const repMap = { db: 'repetition_direct_block', seq: 'repetition_sequence', syl: 'repetition_syllable', vab: 'repetition_vowel_across_boundary', tl: 'repetition_triple_letter'};
                 for (const [key, id] of Object.entries(repMap)) {
@@ -784,6 +772,139 @@ function showLoadPresetModal() {
     });
 }
 
+/** Formats metadata for display in the modal */
+function formatMetadata(metadata, blocks = []) {
+    if (!metadata || Object.keys(metadata).length === 0) {
+        return '<p>No scoring data available</p>';
+    }
+    
+    let html = '';
+    
+    // Overall scoring summary
+    if (metadata.overall_average_score !== undefined) {
+        const wasForced = metadata.was_forced ? ' (Forced - low scores)' : '';
+        const forceClass = metadata.was_forced ? 'forced' : 'normal';
+        html += `<div class="score-summary ${forceClass}">`;
+        html += `<strong>Overall Score:</strong> ${metadata.overall_average_score.toFixed(1)}/100${wasForced}<br>`;
+        html += `<strong>Lowest Block:</strong> ${metadata.lowest_block_score.toFixed(1)}/100<br>`;
+        html += `<strong>Blocks Used:</strong> ${metadata.block_count}`;
+        html += `</div>`;
+    }
+    
+    // Block-specific scores with actual block names
+    const blockTypes = ['prefix', 'middle', 'suffix'];
+    let blockIndex = 0;
+    
+    blockTypes.forEach(blockType => {
+        const scoreKey = `${blockType}_score`;
+        if (metadata[scoreKey]) {
+            const scoreData = metadata[scoreKey];
+            const blockName = blocks[blockIndex] || '';
+            // Check if this individual block triggered the low score threshold
+            const threshold = metadata.scoring_config_threshold || 40; // fallback threshold
+            const isBlockForced = scoreData.was_forced || (scoreData.total_score < threshold);
+            const blockForceClass = isBlockForced ? 'forced' : '';
+            
+            html += `<div class="block-score ${blockForceClass}">`;
+            html += `<h5>${blockType.charAt(0).toUpperCase() + blockType.slice(1)} Block`;
+            if (blockName) {
+                html += `: <span class="block-name">${blockName}</span>`;
+            }
+            html += `</h5>`;
+            html += `<div class="score-details">`;
+            html += `<span class="score-item">Total: <strong>${scoreData.total_score.toFixed(1)}</strong></span>`;
+            html += `<span class="score-item">Vibe: ${scoreData.vibe_score.toFixed(1)}</span>`;
+            html += `<span class="score-item">Compatibility: ${scoreData.compatibility_score.toFixed(1)}</span>`;
+            if (scoreData.was_forced) {
+                html += `<span class="score-item forced-indicator">⚠️ Forced</span>`;
+            }
+            html += `</div>`;
+            html += `</div>`;
+            
+            blockIndex++;
+        }
+    });
+    
+    return html;
+}
+
+/** Shows a modal displaying the selected name with copy functionality and metadata */
+function showNameDetailModal(nameText, blocks = [], metadata = {}) {
+    console.log("Opening name detail modal for:", nameText, "with metadata:", metadata);
+    const modalContainer = document.getElementById('name-detail-modal');
+    const modalNameTitle = document.getElementById('modal-name-title');
+    const modalMetadataContainer = document.getElementById('modal-metadata-container');
+    const modalCopyBtn = document.getElementById('modal-copy-btn');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const closeButton = modalContainer.querySelector('.close-button');
+
+    if (!modalContainer || !modalNameTitle || !modalCopyBtn || !modalCloseBtn || !closeButton) {
+        console.error("Name detail modal elements not found!");
+        // Fallback to old behavior
+        navigator.clipboard.writeText(nameText)
+            .then(() => ToastManager.success(`Copied: ${nameText}`))
+            .catch(() => ToastManager.error('Failed to copy name.'));
+        return;
+    }
+
+    // Set the name as the title
+    modalNameTitle.textContent = nameText;
+    
+    // Display metadata with integrated block information
+    if (modalMetadataContainer && Object.keys(metadata).length > 0) {
+        modalMetadataContainer.innerHTML = formatMetadata(metadata, blocks);
+    }
+
+    // Show the modal
+    modalContainer.classList.add('visible');
+
+    // Remove any existing event listeners to prevent duplicates
+    const newModalCopyBtn = modalCopyBtn.cloneNode(true);
+    const newModalCloseBtn = modalCloseBtn.cloneNode(true);
+    const newCloseButton = closeButton.cloneNode(true);
+    
+    modalCopyBtn.parentNode.replaceChild(newModalCopyBtn, modalCopyBtn);
+    modalCloseBtn.parentNode.replaceChild(newModalCloseBtn, modalCloseBtn);
+    closeButton.parentNode.replaceChild(newCloseButton, closeButton);
+
+    // Close modal function
+    const closeModal = () => {
+        modalContainer.classList.remove('visible');
+    };
+
+    // Add event listeners
+    newModalCopyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(nameText)
+            .then(() => {
+                ToastManager.success(`Copied: ${nameText}`);
+                // Don't close modal when copying
+            })
+            .catch(err => {
+                console.error('Failed to copy name from modal:', err);
+                ToastManager.error('Failed to copy name.');
+            });
+    });
+
+    newModalCloseBtn.addEventListener('click', closeModal);
+    newCloseButton.addEventListener('click', closeModal);
+
+    // Close on clicking outside the modal content
+    modalContainer.addEventListener('click', (event) => {
+        if (event.target === modalContainer) {
+            closeModal();
+        }
+    });
+
+    // Close on Escape key
+    const escapeHandler = (event) => {
+        if (event.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', escapeHandler);
+        }
+    };
+    document.addEventListener('keydown', escapeHandler);
+}
+
 // --- Preset & Form Application ---
 
 /**
@@ -860,7 +981,6 @@ function applyPresetToForm(config) {
         const defaultWeightComp = 0.6;
         const defaultTopN = 20;
         const defaultLowThresh = 25.0;
-        const defaultBLPen = { 1: 95.0, 2: 70.0, 3: 45.0, 4: 25.0, 5: 10.0 };
         const defaultRepPen = { direct_block: 75.0, sequence: 55.0, syllable: 50.0, vowel_across_boundary: 20.0, triple_letter: 30.0 };
         const defaultRepMult = { syllable_common: 0.2 };
         const defaultBoundPen = { consonants_3: 25.0, consonants_4plus: 45.0, vowels_3plus: 50.0 };
@@ -879,15 +999,6 @@ function applyPresetToForm(config) {
         updateSlider('top_n_candidates', sc.top_n_candidates ?? defaultTopN);
         updateSlider('low_score_threshold', sc.low_score_threshold ?? defaultLowThresh);
 
-        // Apply blacklist penalties
-        if (sc.blacklist_penalties) {
-            for (let i = 1; i <= 5; ++i) {
-                // Use ?? to provide default if sc.blacklist_penalties[i] is null/undefined
-                updateSlider(`blacklist_level${i}`, sc.blacklist_penalties[i] ?? defaultBLPen[i]);
-            }
-        } else {
-             for (let i = 1; i <= 5; ++i) { updateSlider(`blacklist_level${i}`, defaultBLPen[i]); }
-        }
 
         // Apply repetition penalties
         const repMap = { direct_block: 'repetition_direct_block', sequence: 'repetition_sequence', syllable: 'repetition_syllable', vowel_across_boundary: 'repetition_vowel_across_boundary', triple_letter: 'repetition_triple_letter'};
@@ -1051,10 +1162,30 @@ function generateNames() {
 
         if (data.success && data.names) {
             let namesHtml = '';
-            data.names.forEach(name => {
-                namesHtml += `<div class="name-item" title="Click to copy">${name}</div>`;
+            data.names.forEach((nameData, index) => {
+                // Handle both old format (string) and new format (object) for backward compatibility
+                const nameText = typeof nameData === 'string' ? nameData : nameData.name;
+                const score = typeof nameData === 'object' && nameData.metadata && nameData.metadata.overall_average_score 
+                    ? Math.round(nameData.metadata.overall_average_score) 
+                    : '';
+                const wasForced = typeof nameData === 'object' && nameData.metadata && nameData.metadata.was_forced;
+                const lowestBlockScore = typeof nameData === 'object' && nameData.metadata && nameData.metadata.lowest_block_score;
+                const isHighQuality = lowestBlockScore && lowestBlockScore > 90;
+                
+                let scoreClass = '';
+                if (wasForced) {
+                    scoreClass = ' forced';
+                } else if (isHighQuality) {
+                    scoreClass = ' high-quality';
+                }
+                
+                const scoreLabel = score ? `<span class="score-label${scoreClass}">${score}</span>` : '';
+                namesHtml += `<div class="name-item" data-index="${index}" title="Click to view details">${nameText}${scoreLabel}</div>`;
             });
             generatedNamesEl.innerHTML = namesHtml; // Replace placeholders with real names
+            
+            // Store the full name data for modal use
+            window.currentNamesData = data.names;
         } else {
             throw new Error(data.error || 'Unknown error occurred during generation.');
         }
@@ -1188,23 +1319,32 @@ function setupCopyFunctionality() {
      const generatedNamesEl = document.getElementById('generated-names');
      const copyAllBtn = document.querySelector('.copy-all-button'); // Use class selector
 
-    // Copy individual name
+    // Open modal for individual name
     if (generatedNamesEl) {
         generatedNamesEl.addEventListener('click', function(e) {
             const nameItem = e.target.closest('.name-item');
             if (nameItem) {
-                const nameText = nameItem.textContent?.trim();
-                if (nameText) {
-                    navigator.clipboard.writeText(nameText)
-                        .then(() => {
-                            ToastManager.success(`Copied: ${nameText}`);
-                             nameItem.classList.add('copy-flash');
-                             setTimeout(() => nameItem.classList.remove('copy-flash'), 500);
-                        })
-                        .catch(err => {
-                             console.error('Failed to copy individual name: ', err);
-                             ToastManager.error('Failed to copy name.');
-                         });
+                // Get just the name text without the score - exclude the score label span
+                const scoreLabel = nameItem.querySelector('.score-label');
+                let nameText = nameItem.textContent?.trim();
+                if (scoreLabel) {
+                    // Remove the score text from the end
+                    nameText = nameText.replace(scoreLabel.textContent.trim(), '').trim();
+                }
+                const dataIndex = nameItem.getAttribute('data-index');
+                
+                if (nameText && dataIndex !== null && window.currentNamesData) {
+                    const nameData = window.currentNamesData[parseInt(dataIndex)];
+                    if (typeof nameData === 'object') {
+                        // New format with metadata
+                        showNameDetailModal(nameText, nameData.blocks || [], nameData.metadata || {});
+                    } else {
+                        // Old format (just string)
+                        showNameDetailModal(nameText);
+                    }
+                } else if (nameText) {
+                    // Fallback for missing data
+                    showNameDetailModal(nameText);
                 }
             }
         });
