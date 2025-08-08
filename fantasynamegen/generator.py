@@ -68,7 +68,7 @@ class FantasyNameConfig:
 
         # Structure: Controls name assembly patterns
         self.force_block_counts: Optional[List[int]] = [2]          # Which block counts to use (2 or 3)
-        self.vowel_first_prefix: Optional[Union[bool, float]] = 0.3 # Probability of vowel-starting prefix
+        self.vowel_first_prefix: Optional[Union[bool, float]] = 0.2 # Probability of vowel-starting prefix
 
         # === POST-PROCESSING EFFECTS ===
         
