@@ -305,7 +305,10 @@ class BlocksViewer {
             return '<div class="empty-state">No blocks available</div>';
         }
         
-        return items.map(item => 
+        // Sort items alphabetically
+        const sortedItems = [...items].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        
+        return sortedItems.map(item => 
             `<div class="block-item" title="${item}">${item}</div>`
         ).join('');
     }
